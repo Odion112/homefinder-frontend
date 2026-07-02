@@ -1,6 +1,6 @@
 import logo from "../assets/images/logo.svg";
 import avatar from "../assets/images/avatar.svg";
-import { Link, useLocation } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useState, useRef, useEffect, useContext } from "react";
 import { LuMenu, LuX } from "react-icons/lu";
 import AccountDropdown from "./AccountDropdown";
