@@ -1,7 +1,8 @@
 import logo from "../assets/images/logo.svg";
 import avatar from "../assets/images/avatar.svg";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect, useContext } from "react";
+import { LuMenu, LuX } from "react-icons/lu";
 import AccountDropdown from "./AccountDropdown";
 import ProfileModal from "./ProfileModal";
 import { ProfileContext } from "../context/ProfileContext";
@@ -16,6 +17,7 @@ function Navbar() {
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const avatarRef = useRef(null);
 
   useEffect(() => {
@@ -45,12 +47,12 @@ function Navbar() {
 
   return (
     <>
-      <nav className="h-[102px] px-[60px] border-b border-[#C6C6C64A]">
+      <nav className="h-[76px] lg:h-[102px] px-5 sm:px-8 lg:px-[60px] border-b border-[#C6C6C64A] bg-[#FDFDFD] relative z-40">
         <div className="h-full flex items-center justify-between">
 
           {/* LOGO */}
-          <Link to="/">
-            <img src={logo} alt="HomeFinder Logo" className="w-[190px]" />
+          <Link to="/" onClick={() => setMobileMenuOpen(false)}>
+            <img src={logo} alt="HomeFinder Logo" className="w-[150px] sm:w-[170px] lg:w-[190px]" />
           </Link>
 
           {/* CENTER NAV LINKS */}
@@ -73,7 +75,7 @@ function Navbar() {
           </div>
 
           {/* RIGHT SIDE */}
-          <div className="flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-8">
 
             {(role === "guest") && (
               <Link to="/sign-in" className="text-[18px] font-rethink font-regular">
@@ -121,7 +123,59 @@ function Navbar() {
             </Link>
 
           </div>
+
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            className="lg:hidden w-10 h-10 flex items-center justify-center rounded-[4px] border border-[#C6C6C6]/60 text-[#0E0D0C]"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <LuX size={22} /> : <LuMenu size={22} />}
+          </button>
         </div>
+
+        {mobileMenuOpen && (
+          <div className="lg:hidden absolute left-0 right-0 top-full bg-[#FDFDFD] border-b border-[#C6C6C64A] px-5 py-5 shadow-sm">
+            <div className="flex flex-col gap-1">
+              <Link
+                to="/properties"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`py-3 text-[17px] font-rethink ${isCurrentPage("/properties") ? "text-accent font-medium" : "text-[#0E0D0C]"}`}
+              >
+                Properties
+              </Link>
+
+              {role === "owner" && (
+                <Link
+                  to="/my-listings"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`py-3 text-[17px] font-rethink ${isCurrentPage("/my-listings") ? "text-accent font-medium" : "text-[#0E0D0C]"}`}
+                >
+                  My Listings
+                </Link>
+              )}
+
+              {role === "guest" && (
+                <Link
+                  to="/sign-in"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-3 text-[17px] font-rethink text-[#0E0D0C]"
+                >
+                  Sign in
+                </Link>
+              )}
+
+              <Link
+                to={getListPropertyRoute()}
+                onClick={() => setMobileMenuOpen(false)}
+                className="mt-3 bg-accent text-surface w-full h-[46px] rounded-xs text-[17px] font-rethink flex items-center justify-center"
+              >
+                List Property
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Profile Modal */}

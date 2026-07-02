@@ -53,7 +53,7 @@ export default function SignInPage() {
     <div className="flex min-h-screen w-full font-neue">
 
       {/* LEFT SIDE*/}
-      <div className="relative w-[52%] flex-shrink-0">
+      <div className="relative hidden lg:block w-[52%] flex-shrink-0">
 
         {/* Hero image */}
         <img
@@ -86,10 +86,10 @@ export default function SignInPage() {
       </div>
 
       {/* RIGHT SIDE*/}
-      <div className="flex-1 flex items-center justify-center bg-white px-16">
+      <div className="flex-1 flex items-center justify-center bg-white px-5 sm:px-8 lg:px-16 py-12">
         <div className="w-full max-w-[480px]">
 
-          <h1 className="text-[32px] font-neue font-medium text-[#0E0D0C] leading-tight mb-2">
+          <h1 className="text-[28px] sm:text-[32px] font-neue font-medium text-[#0E0D0C] leading-tight mb-2">
             Welcome to HomeFinder
           </h1>
           <p className="text-base text-[#6B6B6B] mb-10">

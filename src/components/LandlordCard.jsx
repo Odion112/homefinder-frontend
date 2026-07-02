@@ -1,302 +1,253 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  PiArrowLeft,
-  PiMapPin,
-  PiBed,
-  PiBathtub,
-  PiShareNetwork,
-  PiCaretDown,
-  PiCarSimple,
-  PiGlobe,
-  PiShieldCheck,
-  PiRoadHorizon,
-  PiBarbell,
-  PiDrop,
-  PiCheckCircle,
-} from "react-icons/pi";
 
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import AmenityTag from "../components/AmenityTag";
-import LandlordCard from "../components/LandlordCard";
 
-// Replace with real images coming from the backend/property data
-import propertyImageOne from "../assets/images/property14.svg";
-import propertyImageTwo from "../assets/images/property15.svg";
-import propertyImageThree from "../assets/images/property16.svg";
-import propertyImageFour from "../assets/images/property17.svg";
-import propertyImageFive from "../assets/images/property15.svg";
-import propertyImageSix from "../assets/images/property17.svg";
-import propertyImageSeven from "../assets/images/property16.svg";
+import ConfirmDialog from "./ConfirmDialog";
+import Dropdown from "./Dropdown";
 
-const GALLERY_IMAGES = [
-  propertyImageOne,
-  propertyImageTwo,
-  propertyImageThree,
-  propertyImageFour,
-  propertyImageFive,
-  propertyImageSix,
-  propertyImageSeven,
+import { IoCallOutline } from "react-icons/io5";
+import { LiaWhatsapp } from "react-icons/lia";
+import { PiFlagPennant, PiCheckCircle } from "react-icons/pi";
+import { IoIosCheckmarkCircle } from "react-icons/io";
+import { MdOutlineVerifiedUser } from "react-icons/md";
+import avatarPlaceholder from "../assets/images/avatar.svg";
+
+const REPORT_REASONS = [
+  "Fraudulent or scam listing",
+  "Incorrect information",
+  "Already rented out",
+  "Inappropriate content",
+  "Other",
 ];
 
-const ALL_AMENITIES = [
-  { icon: PiCarSimple, label: "24/7 Power Supply" },
-  { icon: PiCarSimple, label: "Parking Space" },
-  { icon: PiGlobe, label: "Internet Availability" },
-  { icon: PiShieldCheck, label: "Security" },
-  { icon: PiRoadHorizon, label: "Good Road Access" },
-  { icon: PiBarbell, label: "Gym" },
-  { icon: PiDrop, label: "Running water" },
-];
+const MASKED_NUMBER = "+234 701 *** ****";
 
-const VERIFICATION_TEXT = `Every verified landlord on Home Finder goes through an identity verification process to help improve trust across the platform. This helps property seekers identify more trustworthy listings and make housing decisions with greater confidence before reaching out or scheduling inspections.
+export default function LandlordCard({ landlord, isGuest = false }) {
+  const {
+    name = "Jamiu Peters",
+    verified = true,
+    avatarUrl = null,
+    propertiesListed = 2,
+    memberSince = 2026,
+    phone = "+234 701 111 2222",
+    whatsapp = "+234 701 111 2222",
+  } = landlord || {};
 
-And because Home Finder connects users directly to landlords, we do not allow inspection fees on the platform. You should never pay to inspect a property listed through Home Finder. 
+  const [reportState, setReportState] = useState("idle");
+  const [reason, setReason] = useState("");
+  const [details, setDetails] = useState("");
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [callCopied, setCallCopied] = useState(false);
 
+  const isFormReady = reason.trim() !== "";
 
-If anyone requests an inspection fee while claiming to represent a listing on our platform, please treat it as suspicious and report the listing immediately. roads.`;
+  function handleSubmit() {
+    if (!isFormReady) return;
+    setReportState("submitted");
+  }
 
-export default function PropertyDetailPage() {
-  const [showAllAmenities, setShowAllAmenities] = useState(false);
-  const [showFullVerification, setShowFullVerification] = useState(false);
-  const [linkCopied, setLinkCopied] = useState(false);
-  const [featuredImage, setFeaturedImage] = useState(GALLERY_IMAGES[0]);
-  const [showAllPhotos, setShowAllPhotos] = useState(false);
+  function handleGuestTap() {
+    setShowAuthModal(true);
+  }
 
-  // Right-side thumbnails shown by default (everything after the first/hero image)
-  const sideThumbnails = GALLERY_IMAGES.slice(1, 3);
-  // Extra thumbnails revealed when "View all photos" is tapped
-  const remainingThumbnails = GALLERY_IMAGES.slice(3);
-
-  const visibleAmenities = showAllAmenities
-    ? ALL_AMENITIES
-    : ALL_AMENITIES.slice(0, 6);
-
-  function handleShare() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      setLinkCopied(true);
-      setTimeout(() => setLinkCopied(false), 3000);
-    });
+  function handleCallClick() {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = `tel:${phone}`;
+    } else {
+      navigator.clipboard.writeText(phone).then(() => {
+        setCallCopied(true);
+        setTimeout(() => setCallCopied(false), 3000);
+      });
+    }
   }
 
   return (
     <>
-      <Navbar />
+      <div className="w-full lg:max-w-[500px] bg-white rounded-[6px] border border-gray-100 shadow-sm px-5 sm:px-8 lg:px-10 py-6 sm:py-8 lg:py-10">
+        {/* Price */}
+        <div className="mb-4">
+          <p className="text-[28px] sm:text-[34px] font-medium font-neue text-[#0E0D0C] leading-tight">
+            ₦4,500,000
+            <span className="text-xl font-light font-neue text-[#0E0D0C]">/ yr</span>
+          </p>
+          <p className="text-[20px] text-[#696262] font-neue font-roman mt-2">
+            Rent (Negotiable)
+          </p>
+        </div>
 
-      <main className="pt-8">
-        {/* Photo gallery — edge-to-edge full width, no horizontal padding, 6px gap between images */}
-        <div className="w-full">
-          <div className="grid grid-cols-[2fr_1fr] gap-1.5">
-            <img
-              src={featuredImage}
-              alt="Property featured view"
-              className="w-full h-[500px] object-cover"
+        <hr className="border-[#A5A1A1]/30 mb-7 mt-7" />
+
+        {/* Landlord info — avatarUrl from backend, falls back to placeholder image */}
+        <div className="flex items-center gap-4 mb-7">
+          <img
+            src={avatarUrl || avatarPlaceholder}
+            alt={name}
+            className="w-16 h-16 rounded-full object-cover shrink-0"
+          />
+          <div>
+            <p className="font-neue font-medium text-[#0E0D0C] text-[16px]">{name}</p>
+            {verified && (
+              <div className="flex items-center gap-1 mt-0.5">
+                <MdOutlineVerifiedUser size={14} className="text-green-500 fill-green-500" />
+                <span className="text-[12px] font-neue font-medium text-green-600">Verified Landlord</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="flex items-start gap-5 sm:gap-10 mb-5 bg-[#F5F5F5]/50 px-4 sm:pl-6 pt-4 pb-4 rounded-sm">
+          <div>
+            <p className="text-[16px] font-medium font-neue text-[#0E0D0C]">{propertiesListed}</p>
+            <p className="text-xs text-[#A5A1A1] font-neue">Properties Listed</p>
+          </div>
+          <div className="w-px h-10 bg-[#C6C6C6]/30" />
+          <div>
+            <p className="text-[14px] font-medium font-neue text-[#0E0D0C]">Member since</p>
+            <p className="text-xs text-[#A5A1A1] font-neue">{memberSince}</p>
+          </div>
+        </div>
+
+        {/* Contact buttons */}
+        <div className="flex flex-col gap-3 mb-5">
+
+          {/* Call button */}
+          {isGuest ? (
+            <button
+              onClick={handleGuestTap}
+              className="w-full h-[62px] flex items-center justify-center gap-2 bg-[#FE7C0B] hover:bg-[#f87808] text-white rounded-sm text-sm font-medium font-rethink transition-colors"
+            >
+              <IoCallOutline size={18} />
+              {MASKED_NUMBER}
+            </button>
+          ) : callCopied ? (
+            <div className="w-full h-[62px] flex items-center justify-center gap-1 text-[#0B8A2F] text-sm font-medium font-rethink">
+              <PiCheckCircle size={18} className="text-[#0B8A2F]" />
+              Link copied
+            </div>
+          ) : (
+            <button
+              onClick={handleCallClick}
+              className="w-full h-[62px] flex items-center justify-center gap-2 bg-[#FE7C0B] hover:bg-[#fe8216] text-white rounded-sm text-sm font-medium font-rethink transition-colors"
+            >
+              <IoCallOutline size={18} />
+              {phone}
+            </button>
+          )}
+
+          {/* WhatsApp button */}
+          {isGuest ? (
+            <button
+              onClick={handleGuestTap}
+              className="w-full h-[62px] flex items-center justify-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-800 rounded-sm text-sm font-medium font-rethink transition-colors"
+              style={{ borderRadius: "2px" }}
+            >
+              <LiaWhatsapp size={18} />
+              {MASKED_NUMBER}
+            </button>
+          ) : (
+            <a
+              href={`https://wa.me/${String(whatsapp).replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full h-[62px] flex items-center justify-center gap-2 border rounded-sm border-gray-300 hover:bg-gray-50 text-gray-800 text-sm font-medium font-rethink transition-colors"
+              style={{ borderRadius: "2px" }}
+            >
+              <LiaWhatsapp size={18} />
+              {whatsapp}
+            </a>
+          )}
+
+        </div>
+
+        {/* Report section */}
+        {reportState === "idle" && (
+          <button
+            onClick={() => setReportState("open")}
+            className="flex items-center gap-2 text-[#696262] hover:text-gray-700 font-rethink font-medium text-[15px] mx-auto transition-colors"
+          >
+            <PiFlagPennant size={18} />
+            Report listing
+          </button>
+        )}
+
+        {reportState === "open" && (
+          <div className="mt-1">
+            <button
+              onClick={() => setReportState("idle")}
+              className="flex items-center gap-2 text-[#696262] hover:text-gray-700 text-[15px] mt-9 mb-6 font-rethink font-medium transition-colors"
+            >
+              <PiFlagPennant size={18} />
+              Report listing
+            </button>
+
+            {/* Reason dropdown */}
+            <p className="text-[14px] font-neue text-gray-700 mb-2">
+              Why are you reporting this listing?
+              <span className="text-red-500 ml-0.5">*</span>
+            </p>
+            <Dropdown
+              options={REPORT_REASONS}
+              value={reason}
+              onChange={(val) => setReason(val)}
+              placeholder="Select a reason"
+              className="mb-6 font-neue"
             />
 
-            <div className="flex flex-col gap-1.5">
-              {sideThumbnails.map((image, index) => {
-                const isLastThumbnail = index === sideThumbnails.length - 1;
-                return (
-                  <button
-                    key={image}
-                    type="button"
-                    onClick={() => setFeaturedImage(image)}
-                    className="relative w-full h-[247px] overflow-hidden"
-                  >
-                    <img
-                      src={image}
-                      alt="Property thumbnail"
-                      className="w-full h-full object-cover"
-                    />
-                    {isLastThumbnail && remainingThumbnails.length > 0 && (
-                      <span
-                        role="button"
-                        tabIndex={0}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowAllPhotos((prev) => !prev);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.stopPropagation();
-                            setShowAllPhotos((prev) => !prev);
-                          }
-                        }}
-                        className="absolute inset-0 bg-black/40 hover:bg-black/50 transition-colors flex items-center justify-center text-white text-[20px] font-rethink font-medium"
-                      >
-                        {showAllPhotos ? "Show fewer" : "View all photos"}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Remaining photos — revealed when "View all photos" is tapped */}
-          {showAllPhotos && remainingThumbnails.length > 0 && (
-            <div className="grid grid-cols-4 gap-1.5 mt-1.5">
-              {remainingThumbnails.map((image) => (
-                <button
-                  key={image}
-                  type="button"
-                  onClick={() => setFeaturedImage(image)}
-                  className="w-full h-[160px] overflow-hidden"
-                >
-                  <img
-                    src={image}
-                    alt="Property thumbnail"
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="px-[60px]">
-        {/* Breadcrumb */}
-        <div className="flex items-center justify-between mt-12 mb-10">
-          <Link
-            to="/properties"
-            className="flex items-center gap-2 text-[16px] font-rethink font-regular text-[#696262]"
-          >
-            <PiArrowLeft size={18} />
-            Properties
-            <span className="text-[#696262]">/</span>
-            <span className="font-medium font-rethink text-[#0E0D0C]">3 Bedroom Flat</span>
-          </Link>
-          <p className="text-[14px] font-neue text-[#696262]">Posted 2 days ago</p>
-        </div>
-
-        {/* Title row + share */}
-        <div className="grid grid-cols-[1fr_500px] gap-x-[70px] mt-3 items-start">
-          <div>
-            <div className="flex items-start justify-between">
-              <h1 className="text-[40px] font-neue font-roman text-[#0E0D0C] leading-tight">
-                3 Bedroom Flat
-              </h1>
-            </div>
-
-            <div className="flex items-center gap-2 mt-2 text-[16px] font-neue text-[#696262]">
-              <PiMapPin size={18} />
-              Lekki Phase 1, Lagos
-            </div>
-
-            <div className="flex items-center gap-6 mt-4 text-[15px] font-neue text-[#0E0D0C]">
-              <div className="flex items-center gap-2">
-                <PiBed size={20} />
-                3 Bedrooms
-              </div>
-              <div className="flex items-center gap-2">
-                <PiBathtub size={20} />
-                4 bathrooms
-              </div>
-            </div>
-          </div>
-
-          {/* Share button sits on top, aligned with landlord card column.
-              When tapped, a green "Link copied" confirmation appears
-              to the LEFT of the button (outside it), with a check icon. */}
-          <div className="flex justify-end items-center gap-3">
-            {linkCopied && (
-              <span className="flex items-center gap-1.5 text-[14px] font-rethink font-medium text-[#0B8A2F]">
-                <PiCheckCircle size={18} className="text-[#0B8A2F]" />
-                Link copied
+            {/* Additional details */}
+            <p className="text-[14px] font-neue text-gray-700 mb-2">
+              Additional details{" "}
+              <span className="text-gray-400 font-normal font-neue">(optional)</span>
+            </p>
+            <div className="relative mb-6">
+              <textarea
+                value={details}
+                onChange={(e) => {
+                  if (e.target.value.length <= 500) setDetails(e.target.value);
+                }}
+                placeholder="Tell us more about the issue..."
+                rows={4}
+                className="w-full border border-gray-300 rounded-sm px-3 py-3 text-[14px] font-neue text-gray-900 placeholder-[#A5A1A1] resize-none focus:outline-none focus:ring-1 focus:ring-[#FE7C0B] focus:border-transparent transition"
+              />
+              <span className="absolute bottom-2.5 right-3 text-xs font-neue text-[#696262]">
+                {details.length}/500
               </span>
-            )}
-            <button
-              onClick={handleShare}
-              className="h-10 px-5 flex items-center gap-2 border border-[#C6C6C6] rounded-xs text-sm font-rethink font-normal text-[#0E0D0C] hover:bg-gray-50 transition-colors"
-            >
-              <PiShareNetwork size={18} />
-              Share
-            </button>
-          </div>
-        </div>
-
-        {/* Main content grid — left content block (Description, Amenities,
-            We Verified) grouped in one div, with a 70px gap to the landlord card */}
-        <div className="grid grid-cols-[1fr_500px] gap-x-[70px] mt-10 pb-20">
-
-          {/* LEFT COLUMN — all three sections grouped in a single div */}
-          <div>
-            {/* Description */}
-            <h2 className="text-[22px] font-neue font-medium text-[#0E0D0C] mb-3">
-              Description
-            </h2>
-            <p className="text-[16px] font-neue font-roman text-[#696262] leading-relaxed">
-              This spacious 3-bedroom apartment is located in the heart of
-              Lekki Phase 1. The property features modern interiors, ample
-              parking space, reliable power supply, and 24-hour security. It
-              is situated in a secure and accessible neighborhood close to
-              schools, supermarkets, hospitals, and major roads.
-            </p>
-
-            <hr className="border-[#A5A1A1]/30 my-8" />
-
-            {/* Amenities */}
-            <h2 className="text-[22px] font-neue font-medium text-[#0E0D0C] mb-4">
-              Amenities
-            </h2>
-            <div className="flex flex-wrap gap-3">
-              {visibleAmenities.map((amenity) => (
-                <AmenityTag
-                  key={amenity.label}
-                  icon={amenity.icon}
-                  label={amenity.label}
-                />
-              ))}
             </div>
 
-            <button
-              onClick={() => setShowAllAmenities((prev) => !prev)}
-              className="flex items-center gap-1.5 text-[14px] font-neue font-medium text-[#0E0D0C] underline mt-4"
-            >
-              {showAllAmenities ? "Show less" : `Show all (${ALL_AMENITIES.length + 6})`}
-              <PiCaretDown
-                size={16}
-                className={`transition-transform ${
-                  showAllAmenities ? "rotate-180" : ""
-                }`}
-              />
-            </button>
+            {/* Privacy note */}
+            <div className="flex items-start gap-1.5 mb-6">
+              <MdOutlineVerifiedUser size={14} className="text-[#0B8A2F] text-[#0B8A2F]mt-0.5 shrink-0" />
+              <p className="text-xs font-neue text-[#696262]">
+                Reports are reviewed within 24 hours. Your identity will remain anonymous.
+              </p>
+            </div>
 
-            <hr className="border-[#A5A1A1]/30 my-8" />
-
-            {/* Verification */}
-            <h2 className="text-[22px] font-neue font-medium text-[#0E0D0C] mb-3">
-              We verified this property so you don&apos;t have to
-            </h2>
-            <p className="text-[16px] font-neue font-roman text-[#696262] leading-relaxed">
-              {showFullVerification
-                ? VERIFICATION_TEXT
-                : `${VERIFICATION_TEXT.slice(0, 160)}...`}
-            </p>
+            {/* Submit */}
             <button
-              onClick={() => setShowFullVerification((prev) => !prev)}
-              className="flex items-center gap-1.5 text-[14px] font-neue font-medium text-[#0E0D0C] underline mt-3"
+              onClick={handleSubmit}
+              disabled={!isFormReady}
+              className={`w-full h-[56px] flex items-center justify-center rounded-sm text-sm font-rethink font-medium transition-colors ${
+                isFormReady
+                  ? "bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
+              }`}
             >
-              {showFullVerification ? "Read less" : "Read more"}
-              <PiCaretDown
-                size={16}
-                className={`transition-transform ${
-                  showFullVerification ? "rotate-180" : ""
-                }`}
-              />
+              Submit report
             </button>
           </div>
+        )}
 
-          {/* RIGHT COLUMN — sticky landlord card, 70px away from the left content div */}
-          <div className="sticky top-10 self-start">
-            <LandlordCard />
+        {reportState === "submitted" && (
+          <div className="flex items-center justify-center gap-2 text-[#0B8A2F] text-sm font-rethink font-medium">
+            <IoIosCheckmarkCircle size={18} className="text-[#0B8A2F]" />
+            Report submitted
           </div>
-        </div>
-        </div>
-      </main>
+        )}
+      </div>
 
-      <Footer />
+      {showAuthModal && (
+        <ConfirmDialog onClose={() => setShowAuthModal(false)} />
+      )}
     </>
   );
 }

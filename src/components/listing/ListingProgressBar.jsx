@@ -6,7 +6,7 @@ function ListingProgressBar({
 }) {
   return (
     <div
-      className={`w-[1017px] px-[60px] pt-[32px] pb-[24px] mx-auto ${className}`}
+      className={`w-full max-w-[1017px] px-5 sm:px-8 lg:px-[60px] pt-[32px] pb-[24px] mx-auto ${className}`}
     >
       {/* Label + Step counter */}
       <div className="flex justify-between items-center mb-[12px]">

@@ -19,8 +19,8 @@ export default function HomePagePropertyCard({
 
     <div
       className="
-         w-[360px]
-    h-[410px]
+        w-full
+        min-h-[410px]
         overflow-hidden
         rounded-[6px]
         bg-transparent
@@ -30,7 +30,7 @@ export default function HomePagePropertyCard({
       "
     >
       {/* PROPERTY IMAGE */}
-      <div className="relative w-full h-[240px] overflow-hidden rounded-t-[6px]">
+      <div className="relative w-full h-[220px] sm:h-[240px] overflow-hidden rounded-t-[6px]">
         <img
           src={image}
           alt={title}
@@ -46,23 +46,23 @@ export default function HomePagePropertyCard({
       </div>
 
       {/* CONTENT */}
-      <div className="px-5 pt-7 pb-6 flex flex-col h-[171px]">
+      <div className="px-4 sm:px-5 pt-6 sm:pt-7 pb-6 flex flex-col min-h-[171px]">
 
         {/* TITLE + PRICE */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex flex-col gap-1">
-            <h2 className="text-[24px] font-light leading-tight text-white tracking-tight">
+            <h2 className="text-[21px] sm:text-[24px] font-light leading-tight text-white tracking-tight">
               {title}
             </h2>
             <div className="flex items-center gap-1.5">
               <PiMapPinLight className="text-[14px] text-white/80 shrink-0" />
-              <span className="text-[14px] text-white/80">
+              <span className="text-[14px] text-white/80 line-clamp-1">
                 {location}
               </span>
             </div>
           </div>
 
-          <h3 className="whitespace-nowrap text-[26px] leading-tight">
+          <h3 className="whitespace-nowrap text-[22px] sm:text-[26px] leading-tight">
             <span className=" font-neue font-medium text-white">{priceAmount}</span>
             <span className=" font-neue font-roman text-white">{pricePeriod}</span>
           </h3>
@@ -72,7 +72,7 @@ export default function HomePagePropertyCard({
         <div className="mt-auto mb-4 h-[1px] bg-white/10" />
 
         {/* FEATURES */}
-        <div className="flex items-center gap-5">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
           <div className="flex items-center gap-1.5">
             <IoBedOutline className="text-[16px] text-white/70 shrink-0" />
             <span className="text-[13px] text-white/70">{beds} Beds</span>

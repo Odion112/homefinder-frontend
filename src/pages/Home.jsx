@@ -114,8 +114,8 @@ export default function HomePage() {
       <Navbar />
 
       {/* HERO */}
-      <section className="px-[60px] pt-8">
-        <div className="relative h-[570px] rounded-[6px] overflow-hidden">
+      <section className="px-5 sm:px-8 lg:px-[60px] pt-5 lg:pt-8">
+        <div className="relative h-[430px] sm:h-[500px] lg:h-[570px] rounded-[6px] overflow-hidden">
           <img
             src={heroImage}
             alt="Modern house exterior"
@@ -123,11 +123,11 @@ export default function HomePage() {
           />
           <div className="absolute inset-0 bg-black/65" />
 
-          <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
-            <h1 className="font-neue text-white text-[56px] leading-[1.1] max-w-[760px]">
+          <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-5 sm:px-6">
+            <h1 className="font-neue text-white text-[38px] sm:text-[46px] lg:text-[56px] leading-[1.1] max-w-[760px]">
               Find your next house, not another agent
             </h1>
-            <p className="mt-6 font-rethink text-white/90 text-[18px] leading-[28px] max-w-[480px]">
+            <p className="mt-5 sm:mt-6 font-rethink text-white/90 text-[16px] sm:text-[18px] leading-[26px] sm:leading-[28px] max-w-[480px]">
               Browse available rental properties and connect directly with
               landlords to make finding a place simpler.
             </p>
@@ -139,11 +139,11 @@ export default function HomePage() {
       <AboutUs />
 
       {/* YOU MAY ALSO LIKE */}
-      <section className="bg-[#0E0D0C] px-[60px] py-[100px]">
-        <div className="flex items-center justify-between">
+      <section className="bg-[#0E0D0C] px-5 sm:px-8 lg:px-[60px] py-16 lg:py-[100px]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div>
-            <h2 className="font-neue text-white text-[34px]">
-              Explore What's Available
+            <h2 className="font-neue text-white text-[28px] sm:text-[34px]">
+             Explore What's Available
             </h2>
             <p className="mt-2 font-neue font-light text-white/60 text-[16px]">
               A glimpse at houses currently listed on HomeFinder
@@ -177,19 +177,19 @@ export default function HomePage() {
       </section>
 
       {/* HOW HOMEFINDER WORKS */}
-      <section className="px-[60px] py-[120px]">
-        <div className="flex items-start gap-[80px]">
+      <section className="px-5 sm:px-8 lg:px-[60px] py-16 lg:py-[120px]">
+        <div className="flex flex-col lg:flex-row items-start gap-10 lg:gap-[80px]">
 
           {/* GALLERY — single composite image */}
           <img
             src={howItWorksGallery}
             alt="Showcase of homes available on HomeFinder"
-            className="w-[560px] shrink-0"
+            className="w-full max-w-[560px] shrink-0"
           />
 
           {/* STEPS */}
           <div className="flex-1 pt-2">
-            <h2 className="font-neue text-[34px] text-[#0E0D0C]">
+            <h2 className="font-neue text-[28px] sm:text-[34px] text-[#0E0D0C]">
               How HomeFinder Works
             </h2>
             <p className="mt-4 font-neue font-roman text-[16px] leading-[26px] text-[#696262] max-w-[520px]">
@@ -198,7 +198,7 @@ export default function HomePage() {
               back and forth.
             </p>
 
-            <div className="mt-12 flex flex-col gap-10">
+            <div className="mt-10 lg:mt-12 flex flex-col gap-8 lg:gap-10">
               <FeatureCard
                 icon={exploreIcon}
                 title="Explore available rental properties"
@@ -225,8 +225,8 @@ export default function HomePage() {
       </section>
 
       {/* CTA BANNER */}
-      <section className="px-[60px] pb-[100px]">
-        <div className="relative h-[280px] rounded-[6px] overflow-hidden">
+      <section className="px-5 sm:px-8 lg:px-[60px] pb-16 lg:pb-[100px]">
+        <div className="relative min-h-[300px] lg:h-[280px] rounded-[6px] overflow-hidden">
           <img
             src={ctaBanner}
             alt="Modern house interior"
@@ -234,8 +234,8 @@ export default function HomePage() {
           />
           <div className="absolute inset-0 bg-black/60" />
 
-          <div className="relative z-10 h-full flex flex-col justify-center px-12">
-            <h2 className="font-neue font-roman text-white text-[34px] leading-[1.2] max-w-[420px]">
+          <div className="relative z-10 h-full min-h-[300px] lg:min-h-0 flex flex-col justify-center px-6 sm:px-10 lg:px-12 py-10">
+            <h2 className="font-neue font-roman text-white text-[28px] sm:text-[34px] leading-[1.2] max-w-[420px]">
               Are you a house owner? List your property for free
             </h2>
             <Link

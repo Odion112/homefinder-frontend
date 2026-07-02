@@ -41,7 +41,7 @@ export default function FilterPanel({ onApply }) {
   };
 
   return (
-    <div className="w-[380px] bg-[#D9D9D9]/12 rounded-xs overflow-hidden flex flex-col pb-2">
+    <div className="w-full lg:w-[320px] xl:w-[380px] bg-[#D9D9D9]/12 rounded-xs overflow-hidden flex flex-col pb-2">
 
       {/* Location */}
       <div className="px-5 pt-5 pb-6">

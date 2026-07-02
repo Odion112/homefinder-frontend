@@ -154,10 +154,10 @@ function ListPropertyForm({
 
  
   return (
-    <div className="bg-white border border-[#C6C6C6]/40 shadow-md rounded-[4px] p-[48px] w-full max-w-[900px] mx-auto">
+    <div className="bg-white border border-[#C6C6C6]/40 shadow-md rounded-[4px] p-5 sm:p-8 lg:p-[48px] w-full max-w-[900px] mx-auto">
 
       {/* HEADING */}
-      <div className="flex items-center gap-[12px] mb-[32px]">
+      <div className="flex items-start sm:items-center gap-[12px] mb-[28px] sm:mb-[32px]">
         {showBackArrow && (
           <button
             onClick={onBack}
@@ -167,7 +167,7 @@ function ListPropertyForm({
             <RiArrowLeftLine size={20} />
           </button>
         )}
-        <h1 className="text-[28px] font-neue font-medium text-[#1A1A1A] leading-tight">
+        <h1 className="text-[24px] sm:text-[28px] font-neue font-medium text-[#1A1A1A] leading-tight">
           Tell us about your property
         </h1>
       </div>
@@ -185,7 +185,7 @@ function ListPropertyForm({
       </div>
 
       {/* TYPE + PRICE */}
-      <div className="grid grid-cols-2 gap-[16px] mb-[20px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px] mb-[20px]">
         <div>
           <label className={labelCls}>Property type</label>
           <div className="relative">
@@ -239,7 +239,7 @@ function ListPropertyForm({
       </div>
 
       {/* STATE + AREA */}
-      <div className="grid grid-cols-2 gap-[16px] mb-[20px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px] mb-[20px]">
         <div>
           <label className={labelCls}>State</label>
           <div className="relative">
@@ -269,7 +269,7 @@ function ListPropertyForm({
       </div>
 
       {/* BEDROOMS + BATHROOMS */}
-      <div className="grid grid-cols-2 gap-[16px] mb-[28px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px] mb-[28px]">
         <div>
           <label className={labelCls}>Bedrooms</label>
           <input
@@ -459,7 +459,7 @@ function ListPropertyForm({
       {showContactDetails && (
         <div className="mb-[36px]">
           <p className={labelCls}>Contact details</p>
-          <div className="grid grid-cols-2 gap-[16px]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px]">
             <div>
               <label className="block text-[13px] font-rethink text-[#6B6B6B] mb-[8px]">
                 Phone number
@@ -491,17 +491,17 @@ function ListPropertyForm({
 <div className="border-t border-[#c6c6c6]/40 mt-8 mb-4 pt-4 flex gap-3"></div>
 
       {/* BUTTONS */}
-      <div className="flex items-center justify-end gap-[12px]">
+      <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-[12px]">
         <button
           onClick={onCancel}
-          className="h-[46px] px-[28px] border border-[#E8E8E8] rounded-[6px] text-[14px] font-rethink font-medium text-[#1A1A1A] hover:bg-[#F5F5F5] transition-colors"
+          className="w-full sm:w-auto h-[46px] px-[28px] border border-[#E8E8E8] rounded-[6px] text-[14px] font-rethink font-medium text-[#1A1A1A] hover:bg-[#F5F5F5] transition-colors"
         >
           Cancel
         </button>
         <button
           onClick={handlePublish}
           disabled={!canPublish}
-          className={`h-[46px] px-[28px] rounded-[6px] text-[14px] font-rethink font-medium transition-colors ${
+          className={`w-full sm:w-auto h-[46px] px-[28px] rounded-[6px] text-[14px] font-rethink font-medium transition-colors ${
             canPublish
               ? "bg-accent text-white hover:bg-[#e56e00]"
               : "bg-[#E8E8E8] text-[#B0B0B0] cursor-not-allowed"

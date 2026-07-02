@@ -14,7 +14,7 @@ import { useContext, useEffect } from "react";
 import { TokenContext } from "../context/TokenContext";
 import { ProfileDispatchContext } from "../context/ProfileContext"
 import { getProfile } from "../utils/fn";
-
+import MyListings from "./listing/MyListings";
 
 export default function Navigation() {
 

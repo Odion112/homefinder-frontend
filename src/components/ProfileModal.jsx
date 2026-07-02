@@ -14,12 +14,6 @@ const InfoField = ({ label, value }) => (
 const ProfileModal = ({ isOpen, onClose, user, onSaveProfile, onSavePassword }) => {
   const [view, setView] = useState("default");
 
-  const [profileForm, setProfileForm] = useState({
-    name: user?.name ?? "",
-    email: user?.email ?? "",
-    phone: user?.phone ?? "",
-  });
-
   const [passwordForm, setPasswordForm] = useState({
     current: "",
     newPass: "",

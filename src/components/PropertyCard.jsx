@@ -20,8 +20,9 @@ export default function PropertyCard({
 
     <div
   className={`
-    w-[345px]
-    h-[410px]
+    w-full
+    max-w-[380px]
+    min-h-[410px]
     overflow-hidden
     rounded-[4px]
     bg-white
@@ -35,7 +36,7 @@ export default function PropertyCard({
   `}
 >
       {/* PROPERTY IMAGE */}
-      <div className="relative w-full h-[240px] overflow-hidden">
+      <div className="relative w-full h-[220px] sm:h-[240px] overflow-hidden">
         <img
           src={image}
           alt={title}
@@ -51,23 +52,23 @@ export default function PropertyCard({
       </div>
 
       {/* CONTENT */}
-      <div className="bg-white px-5 pt-7 pb-6 flex flex-col h-[171px] gap-2">
+      <div className="bg-white px-4 sm:px-5 pt-6 sm:pt-7 pb-6 flex flex-col min-h-[171px] gap-2">
 
         {/* TITLE + PRICE */}
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex flex-col gap-1">
-            <h2 className="text-[24px] font-light leading-tight text-[#0E0D0C] tracking-tight font-neue">
+            <h2 className="text-[21px] sm:text-[24px] font-light leading-tight text-[#0E0D0C] tracking-tight font-neue">
               {title}
             </h2>
             <div className="flex items-center gap-1.5">
               <PiMapPinLight className="text-[14px] text-[#696262] shrink-0" />
-              <span className="text-[14px] font-roman text-[#696262] font-neue">
+              <span className="text-[14px] font-roman text-[#696262] font-neue line-clamp-1">
                 {location}
               </span>
              </div>
           </div>
 
-          <h3 className="whitespace-nowrap text-[26px] font-NeueHaasDisplay text-[#0E0D0C] leading-tight">
+          <h3 className="whitespace-nowrap text-[22px] sm:text-[26px] font-NeueHaasDisplay text-[#0E0D0C] leading-tight">
   <span className="font-neue font-medium">{price}</span>
  <span className="font-neue font-medium">{duration}</span>
 </h3>
@@ -77,7 +78,7 @@ export default function PropertyCard({
         <div className="mt-auto mb-4 h-[1px] bg-[#F1F0F0]" />
 
         {/* FEATURES */}
-        <div className="flex items-center gap-5">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
           <div className="flex items-center gap-1.5">
             <IoBedOutline className="text-[16px] text-[#696262] shrink-0" />
             <span className="text-[13px] text-[#696262] font-neue">{beds} Beds</span>

@@ -174,16 +174,17 @@ const filteredProperties = properties.filter((property) => {
       <Navbar />
 
       {/* PAGE */}
-      <section className="px-[60px] pt-[44px]">
+      <section className="px-5 sm:px-8 lg:px-[60px] pt-8 lg:pt-[44px]">
 
         {/* HEADER */}
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
 
           {/* LEFT */}
           <div>
             
             <div  className="
-                text-[32px]
+                text-[30px]
+                sm:text-[32px]
                 leading-none
                 font-roman
                 font-neue
@@ -206,17 +207,17 @@ const filteredProperties = properties.filter((property) => {
           </div>
 
           {/* RIGHT */}
-        <div className="flex items-center gap-4 shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 lg:shrink-0 w-full lg:w-auto">
 
             <SearchBar
   value={query}
   onChange={setQuery}
-  className="w-[300px] h-[40px] shrink-0"
+  className="w-full sm:w-[300px] h-[40px] sm:shrink-0"
 />
 
 <Button
   variant="outline"
-  className="w-[110px] h-[40px] shrink-0"
+  className="w-full sm:w-[110px] h-[40px] sm:shrink-0"
   iconLeft={
     showFilters
       ? <LuPanelLeftClose size={18} />
@@ -229,7 +230,7 @@ const filteredProperties = properties.filter((property) => {
 
 
 {/* SORTBY DROPDOWN */}
-<div className="relative w-[145px]">
+<div className="relative w-full sm:w-[145px]">
 
   <button
     onClick={() => setOpen((prev) => !prev)}
@@ -306,11 +307,11 @@ const filteredProperties = properties.filter((property) => {
         </div>
 
         {/* GRID */}
-   <div className="mt-[32px] flex gap-[20px] items-start">
+   <div className="mt-9 lg:mt-[48px] flex flex-col lg:flex-row gap-[20px] items-start">
 
   {/* FILTER PANEL */}
   {showFilters && (
-    <div className="shrink-0">
+    <div className="w-full lg:shrink-0">
       <FilterPanel onApply={handleApplyFilters} />
     </div>
   )}
@@ -320,7 +321,7 @@ const filteredProperties = properties.filter((property) => {
 
     {(filters.location ||
       filters.selectedTypes.length > 0) && (
-      <div className="flex justify-between mb-6">
+      <div className="flex items-center justify-between gap-4 mb-6">
 
         <h3 className="text-[22px] font-neue">
           {filteredProperties.length} results
@@ -339,13 +340,16 @@ const filteredProperties = properties.filter((property) => {
     <div
       className={`
         grid
-        gap-x-[30px]
-        gap-y-[36px]
-        pb-[140px]
+        gap-x-[24px]
+        xl:gap-x-[30px]
+        gap-y-[30px]
+        lg:gap-y-[36px]
+        pb-20
+        lg:pb-[140px]
         ${
           showFilters
-            ? "grid-cols-2"
-            : "grid-cols-3"
+            ? "grid-cols-1 md:grid-cols-2"
+            : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
         }
       `}
     >
@@ -353,12 +357,12 @@ const filteredProperties = properties.filter((property) => {
         <Link
           key={property.id}
           to={`/properties/${property.id}`}
-          className="w-fit"
+          className="w-full"
         >
         <PropertyCard
   className={
     showFilters
-      ? "!w-[330px]"
+      ? ""
       : ""
   }
             image={property.image}

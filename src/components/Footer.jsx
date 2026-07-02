@@ -15,16 +15,17 @@ export default function Footer() {
     <footer
       className="
         relative
-        h-[694px]
+        min-h-[560px]
+        lg:h-[694px]
         bg-black
         overflow-hidden
         text-white
       "
     >
       {/* Main content */}
-      <div className="relative z-10 h-full px-8 md:px-16 pt-20">
+      <div className="relative z-10 h-full px-5 sm:px-8 md:px-16 pt-14 lg:pt-20 pb-32 lg:pb-0">
 
-        <div className="flex flex-col lg:flex-row justify-between h-full">
+        <div className="flex flex-col lg:flex-row gap-14 lg:gap-10 justify-between h-full">
 
          {/* LEFT SECTION */}
 <div className="flex flex-col gap-4">
@@ -33,16 +34,16 @@ export default function Footer() {
   <img
     src={logo}
     alt="Home Finder"
-    className="w-[260px]"
+    className="w-[210px] sm:w-[260px]"
   />
 
   {/* Navigation links */}
   <div
     className="
-      mt-[50px]
+      mt-10 lg:mt-[50px]
       font-neue
       font-medium
-      text-[20px]
+      text-[18px] sm:text-[20px]
       text-[#C6C6C6]
       
 
@@ -50,7 +51,7 @@ export default function Footer() {
   >
 
     {/* First Row */}
-    <div className="flex items-center gap-x-6">
+    <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-3">
 
       <a  className="hover:text-[#C6C6C6]/60" href="/search">Search</a>
 
@@ -78,10 +79,10 @@ export default function Footer() {
 </div>
 
           {/* RIGHT SECTION */}
-          <div className="relative flex flex-col gap-16">
+          <div className="relative flex flex-col gap-10 lg:gap-16">
 
             {/* Contact */}
-            <div className="space-y-14 gap-[120px]">
+            <div className="space-y-10 lg:space-y-14">
 
               {/* Contact label + number */}
               <div>
@@ -102,8 +103,9 @@ export default function Footer() {
                     mt-3
                     font-neue
                     font-roman
-                    text-[28px]
-                    leading-none
+                    text-[22px]
+                    sm:text-[28px]
+                    leading-tight
                   "
                 >
                   (+234 7016 622509)
@@ -112,7 +114,7 @@ export default function Footer() {
               </div>
 
               {/* Email + Socials */}
-              <div className="flex gap-[120px]">
+              <div className="flex flex-col sm:flex-row gap-8 sm:gap-16 lg:gap-[120px]">
 
                 {/* Email */}
                 <div>
@@ -173,10 +175,9 @@ export default function Footer() {
             {/* Copyright */}
             <p
               className="
-               mt-[123px]
-                absolute
-                bottom-[257px]
-                left-0
+                lg:absolute
+                lg:bottom-[257px]
+                lg:left-0
                 font-rethink
                 font-medium
                 text-[16px]
@@ -195,8 +196,11 @@ export default function Footer() {
           aria-label="Scroll to top"
           className="
             absolute
-            left-16
-            bottom-[248px]
+            left-5
+            sm:left-8
+            lg:left-16
+            bottom-20
+            lg:bottom-[248px]
             w-[44px]
             h-[44px]
             rounded-full

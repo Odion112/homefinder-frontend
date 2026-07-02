@@ -139,13 +139,13 @@ export default function MyListingCard({
   return (
     <div
       className="
-        w-[420px] overflow-hidden rounded-[20px] bg-white
+        w-full overflow-hidden rounded-[4px] bg-white
         shadow-sm transition hover:shadow-lg font-neue
         ring-1 ring-[#C6C6C6]/25
       "
     >
       {/* IMAGE */}
-      <div className="relative w-full h-[275px] overflow-hidden rounded-t-[20px]">
+      <div className="relative w-full h-[220px] sm:h-[270px] overflow-hidden rounded-t-[4px]">
         <img
           src={image}
           alt={title}
@@ -157,11 +157,11 @@ export default function MyListingCard({
       <div className="bg-white px-5 pt-6 pb-6 flex flex-col gap-3">
 
         {/* TITLE & PRICE */}
-        <div className="flex items-start justify-between gap-2">
-          <h2 className="text-[24px] font-light leading-tight text-[#0E0D0C] tracking-tight font-neue">
+        <div className="flex items-start justify-between gap-3">
+          <h2 className="text-[21px] sm:text-[24px] font-light leading-tight text-[#0E0D0C] tracking-tight font-neue">
             {title}
           </h2>
-          <h3 className="whitespace-nowrap text-[26px] leading-tight">
+          <h3 className="whitespace-nowrap text-[22px] sm:text-[26px] leading-tight">
             <span className="font-neue font-medium">₦{price}</span>
             <span className="font-neue font-light text-[#0E0D0C]">/yr</span>
           </h3>
@@ -170,7 +170,7 @@ export default function MyListingCard({
         {/* LOCATION */}
         <div className="flex items-center gap-1.5">
           <PiMapPinLight className="text-[14px] text-[#696262] shrink-0" />
-          <span className="text-[14px] font-light text-[#696262] font-neue">
+          <span className="text-[14px] font-light text-[#696262] font-neue line-clamp-1">
             {location}
           </span>
         </div>
