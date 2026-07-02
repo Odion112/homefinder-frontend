@@ -27,6 +27,10 @@ import listIcon from "../assets/icons/list-icon.svg";
 
 // CTA banner
 import ctaBanner from "../assets/images/cta-banner.svg";
+import { useContext, useEffect } from "react";
+import { getProfile } from "../utils/fn";
+import { TokenContext } from "../context/TokenContext";
+import { ProfileContext } from "../context/ProfileContext";
 
 // You May Also Like 
 const similarListings = [
@@ -99,6 +103,12 @@ const similarListings = [
 ];
 
 export default function HomePage() {
+
+  const tokenPayload = useContext(TokenContext)
+  const profilePayload = useContext(ProfileContext)
+
+  console.log(profilePayload)
+
   return (
     <div className="bg-[#FDFDFD]">
       <Navbar />

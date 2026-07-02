@@ -14,12 +14,6 @@ const InfoField = ({ label, value }) => (
 const ProfileModal = ({ isOpen, onClose, user, onSaveProfile, onSavePassword }) => {
   const [view, setView] = useState("default");
 
-  const [profileForm, setProfileForm] = useState({
-    name: user?.name ?? "",
-    email: user?.email ?? "",
-    phone: user?.phone ?? "",
-  });
-
   const [passwordForm, setPasswordForm] = useState({
     current: "",
     newPass: "",
@@ -102,7 +96,7 @@ const ProfileModal = ({ isOpen, onClose, user, onSaveProfile, onSavePassword }) 
               <h2 className="text-sm font-medium font-neue text-gray-900 mb-4">
                 Profile Information
               </h2>
-              <InfoField label="Full name" value={user?.name} />
+              <InfoField label="Full name" value={user?.firstName + " " + user?.lastName} />
               <InfoField label="Email address" value={user?.email} />
               <InfoField label="Phone number" value={user?.phone} />
 

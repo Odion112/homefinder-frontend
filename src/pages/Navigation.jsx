@@ -10,11 +10,35 @@ import PropertyDetails from "./PropertyDetails";
 import OwnerSetup from "./listing/OwnerSetup";
 import ListProperty from "./listing/ListProperty";
 import ExistingOwnerList from "./listing/ExistingOwnerList";
+import { useContext, useEffect } from "react";
+import { TokenContext } from "../context/TokenContext";
+import { ProfileDispatchContext } from "../context/ProfileContext"
+import { getProfile } from "../utils/fn";
 import MyListings from "./listing/MyListings";
 
 export default function Navigation() {
 
-  const isLoggedIn = false
+  const tokenPayload = useContext(TokenContext)
+  const profileDispatch = useContext(ProfileDispatchContext)
+
+  useEffect(() => {
+    async function call() {
+      try {
+        if (tokenPayload?.token) {
+          const profile = await getProfile(tokenPayload.token)
+          profileDispatch({
+            type: "set",
+            payload: profile
+          })
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    call()
+
+  }, [tokenPayload])
 
   return (
     <Routes>
@@ -28,7 +52,7 @@ export default function Navigation() {
       <Route path="/sign-up" element={<SignUp />} />
 
       {/* Listing Flow */}
-      { isLoggedIn && (
+      {(!!tokenPayload?.token) && (
         <>
           <Route path="/list-property" element={<ListProperty />} />
           <Route path="/owner-setup" element={<OwnerSetup />} />

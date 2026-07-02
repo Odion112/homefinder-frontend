@@ -1,15 +1,19 @@
 import logo from "../assets/images/logo.svg";
 import avatar from "../assets/images/avatar.svg";
-import { Link, useLocation } from "react-router-dom";
-import { useState, useRef, useEffect } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { useState, useRef, useEffect, useContext } from "react";
 import { LuMenu, LuX } from "react-icons/lu";
 import AccountDropdown from "./AccountDropdown";
 import ProfileModal from "./ProfileModal";
+import { ProfileContext } from "../context/ProfileContext";
 
-function Navbar({profile}) {
+function Navbar() {
 
+  const profilePayload = useContext(ProfileContext) || {}
+  const profile = profilePayload.profile || null
 
-  const role = profile ? profile.role : 'guest'
+  const role = profile?.role || 'guest'
+  const initials = profile ? `${profile.firstName?.[0] || ""}${profile.lastName?.[0] || ""}` : ""
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -31,15 +35,15 @@ function Navbar({profile}) {
   }
 
 
-function getListPropertyRoute() {
-  if (role === "guest") return "/sign-in";
+  function getListPropertyRoute() {
+    if (role === "guest") return "/sign-in";
 
-  if (role === "tenant") return "/owner-setup";
+    if (role === "tenant") return "/owner-setup";
 
-  if (role === "owner") return "/existing-owner-list";
+    if (role === "owner") return "/existing-owner-list";
 
-  return "/";
-}
+    return "/";
+  }
 
   return (
     <>
@@ -52,48 +56,28 @@ function getListPropertyRoute() {
           </Link>
 
           {/* CENTER NAV LINKS */}
-          <div className="hidden lg:flex h-full items-center gap-14">
-
-            {role === "guest" && (
-              <Link to="/properties"
-                className={`h-full flex items-center text-[18px] font-rethink font-regular
-                  ${isCurrentPage("/properties") ? "border-b-[3px] border-accent font-medium" : ""}
+          <div className="h-full flex items-center gap-14">
+            <NavLink to="/properties"
+              className={({ isActive }) => `h-full flex items-center text-[18px] font-rethink font-regular
+                  ${isActive ? "border-b-[3px] border-accent font-medium" : ""}
                 `}>
-                Properties
-              </Link>
-            )}
-
-            {role === "tenant" && (
-              <Link to="/properties"
-                className={`h-full flex items-center text-[18px] font-rethink font-regular
-                  ${isCurrentPage("/properties") ? "border-b-[3px] border-accent font-medium" : ""}
-                `}>
-                Properties
-              </Link>
-            )}
+              Properties
+            </NavLink>
 
             {role === "owner" && (
-              <>
-                <Link to="/properties"
-                  className={`h-full flex items-center text-[18px] font-rethink font-regular
-                    ${isCurrentPage("/properties") ? "border-b-[3px] border-accent font-medium" : ""}
-                  `}>
-                  Properties
-                </Link>
-                <Link to="/my-listings"
-                  className={`h-full flex items-center text-[18px] font-rethink font-regular
-                    ${isCurrentPage("/my-listings") ? "border-b-[3px] border-accent font-medium" : ""}
-                  `}>
-                  My Listings
-                </Link>
-              </>
+              <NavLink to="/my-listings"
+                className={({ isActive }) => `h-full flex items-center text-[18px] font-rethink font-regular
+                  ${isActive ? "border-b-[3px] border-accent font-medium" : ""}
+                `}>
+                My Listings
+              </NavLink>
             )}
           </div>
 
           {/* RIGHT SIDE */}
           <div className="hidden lg:flex items-center gap-8">
 
-            {role === "guest" && (
+            {(role === "guest") && (
               <Link to="/sign-in" className="text-[18px] font-rethink font-regular">
                 Sign in
               </Link>
@@ -108,15 +92,13 @@ function getListPropertyRoute() {
                 >
                   {role === "tenant" && (
                     <div className="w-[48px] h-[48px] rounded-full bg-gray-200 flex items-center justify-center text-[16px] font-rethink font-medium text-gray-600">
-                      {user.initials}
+                      {initials}
                     </div>
                   )}
                   {role === "owner" && (
-                    <img
-                      src={user.avatarUrl}
-                      alt="User avatar"
-                      className="w-[48px] h-[48px] rounded-full object-cover"
-                    />
+                    <div className="w-[48px] h-[48px] rounded-full bg-gray-200 flex items-center justify-center text-[16px] font-rethink font-medium text-gray-600">
+                      {initials}
+                    </div>
                   )}
                 </button>
 
@@ -133,12 +115,12 @@ function getListPropertyRoute() {
                 )}
               </div>
             )}
-<Link
-  to={getListPropertyRoute()}
-  className="bg-accent text-surface w-[169px] h-[46px] rounded-xs text-[18px] font-rethink font-regular flex items-center justify-center"
->
-  List Property
-</Link>
+            <Link
+              to={getListPropertyRoute()}
+              className="bg-accent text-surface w-[169px] h-[46px] rounded-xs text-[18px] font-rethink font-regular flex items-center justify-center"
+            >
+              List Property
+            </Link>
 
           </div>
 
