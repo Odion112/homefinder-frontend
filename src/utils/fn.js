@@ -2,7 +2,8 @@
 
 import client from "./api";
 
-const baseUrl = "https://homefinder-backend-hxp6.onrender.com"
+// const baseUrl = "https://homefinder-backend-hxp6.onrender.com"
+const baseUrl = "http://localhost:8080"
 
 export async function signUp(data) {
     try {
@@ -53,7 +54,7 @@ export async function signIn(data) {
 
 export async function getProfile(token) {
     try {
-        const res = await fetch("https://homefinder-backend-hxp6.onrender.com/auth/profile", {
+        const res = await fetch(`${baseUrl}/auth/profile`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`

@@ -36,7 +36,6 @@ export default function SignInPage() {
 
       const response = await signIn(data)
       if (response) {
-        console.log(response)
         tokenDispatch({
           type: "loggedIn",
           payload: response
