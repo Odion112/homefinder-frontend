@@ -2,6 +2,7 @@ import { forwardRef } from "react";
 
 const Button = forwardRef(function Button(
   {
+    type="button",
     variant = "filled", 
     iconOnly = false,   
     iconLeft,           

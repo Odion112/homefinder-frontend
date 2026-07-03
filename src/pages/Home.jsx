@@ -31,6 +31,7 @@ import { useContext, useEffect } from "react";
 import { getProfile } from "../utils/fn";
 import { TokenContext } from "../context/TokenContext";
 import { ProfileContext } from "../context/ProfileContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 // You May Also Like 
 const similarListings = [
@@ -107,7 +108,11 @@ export default function HomePage() {
   const tokenPayload = useContext(TokenContext)
   const profilePayload = useContext(ProfileContext)
 
-  console.log(profilePayload)
+  const queryClient = useQueryClient()
+  const profile = queryClient.getQueryData(['profile'])
+
+  console.log(profile)
+
 
   return (
     <div className="bg-[#FDFDFD]">
@@ -158,7 +163,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="mt-12 grid grid-cols-3 gap-7.5">
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-7.5">
           {similarListings.map((listing) => (
             <HomePagePropertyCard
               key={listing.id}
@@ -239,7 +244,7 @@ export default function HomePage() {
               Are you a house owner? List your property for free
             </h2>
             <Link
-              to="/owner-setup"
+              to={profile ? "/owner-setup" : "/sign-in"}
               className="mt-8 bg-accent text-surface w-[169px] h-[46px] rounded-xs text-[18px] font-rethink font-regular flex items-center justify-center"
             >
               List property

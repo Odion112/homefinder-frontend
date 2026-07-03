@@ -5,22 +5,34 @@ import { useState, useRef, useEffect, useContext } from "react";
 import { LuMenu, LuX } from "react-icons/lu";
 import AccountDropdown from "./AccountDropdown";
 import ProfileModal from "./ProfileModal";
-import { ProfileContext } from "../context/ProfileContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 function Navbar() {
 
-  const profilePayload = useContext(ProfileContext) || {}
-  const profile = profilePayload.profile || null
+  const queryClient = useQueryClient()
 
-  const role = profile?.role || 'guest'
-  const initials = profile ? `${profile.firstName?.[0] || ""}${profile.lastName?.[0] || ""}` : ""
+  const x = queryClient.getQueryData(['profile'])
+
+  const role = x?.role || 'guest'
+  const initials = x ? `${x.firstName?.[0] || ""}${x.lastName?.[0] || ""}` : ""
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const avatarRef = useRef(null);
 
-  useEffect(() => {
+
+  function getListPropertyRoute() {
+    if (role === "guest") return "/sign-in";
+
+    if (role === "tenant") return "/owner-setup";
+
+    if (role === "owner") return "/list-property";
+
+    return "/";
+  }
+
+    useEffect(() => {
     function handleClickOutside(event) {
       if (avatarRef.current && !avatarRef.current.contains(event.target)) {
         setDropdownOpen(false);
@@ -29,21 +41,6 @@ function Navbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  function isCurrentPage(path) {
-    return location.pathname === path;
-  }
-
-
-  function getListPropertyRoute() {
-    if (role === "guest") return "/sign-in";
-
-    if (role === "tenant") return "/owner-setup";
-
-    if (role === "owner") return "/existing-owner-list";
-
-    return "/";
-  }
 
   return (
     <>
@@ -56,7 +53,7 @@ function Navbar() {
           </Link>
 
           {/* CENTER NAV LINKS */}
-          <div className="h-full flex items-center gap-14">
+          <div className="hidden lg:flex h-full` items-center gap-14">
             <NavLink to="/properties"
               className={({ isActive }) => `h-full flex items-center text-[18px] font-rethink font-regular
                   ${isActive ? "border-b-[3px] border-accent font-medium" : ""}
@@ -86,20 +83,15 @@ function Navbar() {
             {(role === "tenant" || role === "owner") && (
               <div className="relative" ref={avatarRef}>
                 <button
-                  onClick={() => setDropdownOpen((prev) => !prev)}
-                  onMouseEnter={() => setDropdownOpen(true)}
-                  className="focus:outline-none cursor-pointer"
+                  onClick={() => {
+                    console.log("Avatar clicked");
+                    setDropdownOpen((prev) => !prev)
+
+                  }}
+                  // onMouseEnter={() => setDropdownOpen(true)}
+                  className="focus:outline-none cursor-pointer w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-[16px] font-rethink font-medium text-gray-600"
                 >
-                  {role === "tenant" && (
-                    <div className="w-[48px] h-[48px] rounded-full bg-gray-200 flex items-center justify-center text-[16px] font-rethink font-medium text-gray-600">
-                      {initials}
-                    </div>
-                  )}
-                  {role === "owner" && (
-                    <div className="w-[48px] h-[48px] rounded-full bg-gray-200 flex items-center justify-center text-[16px] font-rethink font-medium text-gray-600">
-                      {initials}
-                    </div>
-                  )}
+                  {initials}
                 </button>
 
                 {dropdownOpen && (
@@ -109,7 +101,7 @@ function Navbar() {
                       setDropdownOpen(false);
                       setProfileOpen(true);
                     }}
-                    user={profile}
+                    user={x}
                     role={role}
                   />
                 )}
@@ -133,27 +125,51 @@ function Navbar() {
           >
             {mobileMenuOpen ? <LuX size={22} /> : <LuMenu size={22} />}
           </button>
-        </div>
+        </div >
 
         {mobileMenuOpen && (
           <div className="lg:hidden absolute left-0 right-0 top-full bg-[#FDFDFD] border-b border-[#C6C6C64A] px-5 py-5 shadow-sm">
             <div className="flex flex-col gap-1">
-              <Link
+              {(role === "tenant" || role === "owner") && (
+                <div className="relative" ref={avatarRef}>
+                  <button
+                    onClick={() => setDropdownOpen((prev) => !prev)}
+                    onMouseEnter={() => setDropdownOpen(true)}
+                    className="focus:outline-none cursor-pointer py-3 text-[17px] font-rethink "
+                  >
+                    View profile
+
+                  </button>
+
+                  {dropdownOpen && (
+                    <AccountDropdown
+                      onClose={() => setDropdownOpen(false)}
+                      onProfileOpen={() => {
+                        setDropdownOpen(false);
+                        setProfileOpen(true);
+                      }}
+                      user={x}
+                      role={role}
+                    />
+                  )}
+                </div>
+              )}
+              <NavLink
                 to="/properties"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`py-3 text-[17px] font-rethink ${isCurrentPage("/properties") ? "text-accent font-medium" : "text-[#0E0D0C]"}`}
+                className={({ isActive }) => `py-3 text-[17px] font-rethink ${isActive ? "text-accent font-medium" : "text-[#0E0D0C]"}`}
               >
                 Properties
-              </Link>
+              </NavLink>
 
               {role === "owner" && (
-                <Link
+                <NavLink
                   to="/my-listings"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`py-3 text-[17px] font-rethink ${isCurrentPage("/my-listings") ? "text-accent font-medium" : "text-[#0E0D0C]"}`}
+                  className={({ isActive }) => `py-3 text-[17px] font-rethink ${isActive ? "text-accent font-medium" : "text-[#0E0D0C]"}`}
                 >
                   My Listings
-                </Link>
+                </NavLink>
               )}
 
               {role === "guest" && (
@@ -175,14 +191,15 @@ function Navbar() {
               </Link>
             </div>
           </div>
-        )}
-      </nav>
+        )
+        }
+      </nav >
 
       {/* Profile Modal */}
-      <ProfileModal
+      < ProfileModal
         isOpen={profileOpen}
         onClose={() => setProfileOpen(false)}
-        user={profile}
+        user={x}
       />
     </>
   );

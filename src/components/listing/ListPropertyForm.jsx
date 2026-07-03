@@ -6,13 +6,16 @@ import {
   RiDeleteBinLine,
   RiAddLine,
 } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 
 const PROPERTY_TYPES = [
-  "Apartment", "Flat", "Duplex", "Bungalow", "Terrace",
-  "Semi-detached", "Detached House", "Mini flat",
-  "Room & Parlour", "Self-contain", "Studio", "Mansion",
-  "Commercial",
+  "apartment",
+  "self-contained",
+  "duplex",
+  "bungalow",
+  "room&parlour",
+  "office space",
 ];
 
 const NIGERIAN_STATES = [
@@ -39,9 +42,7 @@ const SUPPORT_DOC_TYPES = [
   "Ownership document (e.g. C of O, Deed of Assignment)",
 ];
 
-const MAX_PHOTOS = 10;
-
-
+const MAX_PHOTOS = 1;
 
 function formatFileSize(bytes) {
   if (bytes >= 1_000_000) return `${(bytes / 1_000_000).toFixed(1)} MB`;
@@ -81,29 +82,37 @@ function ListPropertyForm({
   showBackArrow = true,
   showContactDetails = false,
 }) {
+
+  const navigate = useNavigate()
   // Form fields
-  const [title, setTitle]               = useState(initialData.title || "");
+  const [title, setTitle] = useState(initialData.title || "");
   const [propertyType, setPropertyType] = useState(initialData.propertyType || "");
-  const [price, setPrice]               = useState(initialData.price || "");
-  const [description, setDescription]   = useState(initialData.description || "");
-  const [address, setAddress]           = useState(initialData.address || "");
-  const [state, setState]               = useState(initialData.state || "");
-  const [area, setArea]                 = useState(initialData.area || "");
-  const [bedrooms, setBedrooms]         = useState(initialData.bedrooms || "");
-  const [bathrooms, setBathrooms]       = useState(initialData.bathrooms || "");
-  const [amenities, setAmenities]       = useState(initialData.amenities || []);
+  const [price, setPrice] = useState(initialData.price || "");
+  const [description, setDescription] = useState(initialData.description || "");
+  const [address, setAddress] = useState(initialData.address || "");
+  const [state, setState] = useState(initialData.state || "");
+  const [area, setArea] = useState(initialData.area || "");
+  const [bedrooms, setBedrooms] = useState(initialData.bedrooms || "");
+  const [bathrooms, setBathrooms] = useState(initialData.bathrooms || "");
+  const [amenities, setAmenities] = useState(initialData.amenities || []);
+  const [photo, setPhoto] = useState(null)
 
   // Contact fields — only rendered for returning owners
-  const [phone, setPhone]       = useState(initialData.phone || "");
+  const [phone, setPhone] = useState(initialData.phone || "");
   const [whatsapp, setWhatsapp] = useState(initialData.whatsapp || "");
 
   // File uploads
   const [supportDoc, setSupportDoc] = useState(initialData.supportDoc || null);
-  const [photos, setPhotos]         = useState(initialData.photos || []);
+  const [photos, setPhotos] = useState(initialData.photos || []);
   const supportDocRef = useRef(null);
-  const photosRef     = useRef(null);
+  const photosRef = useRef(null);
 
- 
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    setPhoto(file);
+  };
+
+
   const baseValid =
     title.trim() && propertyType && price.trim() && description.trim() &&
     address.trim() && state && area.trim() &&
@@ -112,7 +121,7 @@ function ListPropertyForm({
 
   const canPublish = baseValid && (showContactDetails ? phone.trim() : true);
 
-  
+
 
   function toggleAmenity(amenity) {
     setAmenities((prev) =>
@@ -149,10 +158,10 @@ function ListPropertyForm({
   }
 
   // Photo grid 
-  const visiblePhotos  = photos.slice(0, 3);
-  const overflowCount  = photos.length > 3 ? photos.length - 3 : 0;
+  const visiblePhotos = photos.slice(0, 3);
+  const overflowCount = photos.length > 3 ? photos.length - 3 : 0;
 
- 
+
   return (
     <div className="bg-white border border-[#C6C6C6]/40 shadow-md rounded-[4px] p-5 sm:p-8 lg:p-[48px] w-full max-w-[900px] mx-auto">
 
@@ -160,7 +169,7 @@ function ListPropertyForm({
       <div className="flex items-start sm:items-center gap-[12px] mb-[28px] sm:mb-[32px]">
         {showBackArrow && (
           <button
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             className="text-[#1A1A1A] hover:text-accent transition-colors"
             aria-label="Go back"
           >
@@ -238,257 +247,22 @@ function ListPropertyForm({
         />
       </div>
 
-      {/* STATE + AREA */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px] mb-[20px]">
-        <div>
-          <label className={labelCls}>State</label>
-          <div className="relative">
-            <select
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-              className={`${inputCls} appearance-none pr-[36px]`}
-            >
-              <option value="" disabled>Select here</option>
-              {NIGERIAN_STATES.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-            <ChevronDown />
-          </div>
-        </div>
-        <div>
-          <label className={labelCls}>Area</label>
-          <input
-            type="text"
-            placeholder="e.g. Igbogbo"
-            value={area}
-            onChange={(e) => setArea(e.target.value)}
-            className={inputCls}
-          />
-        </div>
-      </div>
-
-      {/* BEDROOMS + BATHROOMS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px] mb-[28px]">
-        <div>
-          <label className={labelCls}>Bedrooms</label>
-          <input
-            type="number"
-            min="0"
-            placeholder="Specify here"
-            value={bedrooms}
-            onChange={(e) => setBedrooms(e.target.value)}
-            className={inputCls}
-          />
-        </div>
-        <div>
-          <label className={labelCls}>Bathrooms</label>
-          <input
-            type="number"
-            min="0"
-            placeholder="Specify here"
-            value={bathrooms}
-            onChange={(e) => setBathrooms(e.target.value)}
-            className={inputCls}
-          />
-        </div>
-      </div>
-
-      {/* AMENITIES */}
-      <div className="mb-[28px]">
-        <label className={labelCls}>Amenities</label>
-        <div className="flex flex-wrap gap-[8px]">
-          {ALL_AMENITIES.map((amenity) => {
-            const active = amenities.includes(amenity);
-            return (
-              <button
-                key={amenity}
-                onClick={() => toggleAmenity(amenity)}
-                className={`h-[34px] px-[14px] rounded-full text-[13px] font-neue border transition-colors ${
-                  active
-                    ? "bg-[#1A1A1A] text-white border-[#1A1A1A]"
-                    : "bg-white text-[#1A1A1A] border-[#C6C6C6] hover:border-[#1A1A1A]"
-                }`}
-              >
-                {amenity}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* SUPPORTING DOCUMENT */}
-      <div className="mb-[28px]">
-        <p className={labelCls}>Upload a supporting document</p>
-        <p className="text-[13px] font-neue text-[#6B6B6B] mb-[8px]">
-          Upload any one of the following documents as proof of your right to list this property:
-        </p>
-        <ul className="list-disc list-inside mb-[14px] space-y-[2px]">
-          {SUPPORT_DOC_TYPES.map((item) => (
-            <li key={item} className="text-[13px] font-neue text-[#6B6B6B]">{item}</li>
-          ))}
-        </ul>
-
-        {supportDoc ? (
-          /* Filled state */
-          <div className="flex items-center gap-[14px] border border-[#E8E8E8] rounded-[6px] px-[20px] py-[14px]">
-            <div className="w-[36px] h-[36px] rounded-[6px] bg-[#F5F5F5] flex items-center justify-center flex-shrink-0">
-              <RiFileTextLine size={18} className="text-[#6B6B6B]" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[14px] font-neue font-roman text-[#1A1A1A] truncate">{supportDoc.name}</p>
-              <p className="text-[12px] font-neue text-[#6B6B6B]">Uploaded · {supportDoc.size}</p>
-            </div>
-            <button
-              onClick={() => setSupportDoc(null)}
-              className="text-[#6B6B6B] hover:text-[#E53E3E] transition-colors"
-              aria-label="Remove document"
-            >
-              <RiDeleteBinLine size={18} />
-            </button>
-          </div>
-        ) : (
-          /* Default state */
-          <div
-            onClick={() => supportDocRef.current?.click()}
-            onDrop={(e) => { e.preventDefault(); handleDocFile(e.dataTransfer.files?.[0]); }}
-            onDragOver={(e) => e.preventDefault()}
-            className="border border-dashed border-[#C6C6C6] rounded-[6px] py-[28px] flex flex-col items-center gap-[8px] cursor-pointer hover:border-accent transition-colors"
-          >
-            <RiUploadCloud2Line size={28} className="text-[#6B6B6B]" />
-            <p className="text-[14px] font-neue text-[#1A1A1A]">
-              <span className="font-roman">Choose file</span> or drag and drop
-            </p>
-            <p className="text-[12px] font-neue text-[#6B6B6B]">PDF, JPG, PNG (Max 5MB)</p>
-          </div>
-        )}
-
-        <input
-          ref={supportDocRef}
-          type="file"
-          accept=".jpg,.jpeg,.png,.pdf"
-          className="hidden"
-          onChange={(e) => handleDocFile(e.target.files?.[0])}
-        />
-      </div>
 
       {/* PROPERTY PHOTOS */}
       <div className="mb-[28px]">
         <p className={labelCls}>Property photos</p>
         <p className="text-[13px] font-neue text-[#6B6B6B] mb-[14px]">
-          Upload at least 3 photos. More pictures lead to more enquiries.
+          Upload a photo of the property.
         </p>
-
-        <div className="flex flex-wrap gap-[12px]">
-          {photos.length === 0 ? (
-            /* Default: 4 empty slots */
-            [0, 1, 2, 3].map((i) => (
-              <button
-                key={i}
-                onClick={() => photosRef.current?.click()}
-                className="w-[120px] h-[90px] rounded-[6px] border border-dashed border-[#C6C6C6] flex items-center justify-center hover:border-accent transition-colors"
-              >
-                <RiAddLine size={20} className="text-[#B0B0B0]" />
-              </button>
-            ))
-          ) : (
-            <>
-              {visiblePhotos.map((photo, i) => {
-                const showOverlay = i === 2 && overflowCount > 0;
-                return (
-                  <div
-                    key={i}
-                    className="relative w-[120px] h-[90px] rounded-[6px] overflow-hidden flex-shrink-0 group"
-                  >
-                    <img
-                      src={photo.previewUrl}
-                      alt={`Property ${i + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                    {showOverlay ? (
-                      /* Overflow badge on 3rd thumbnail */
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <span className="text-white text-[16px] font-neue font-roman">
-                          +{overflowCount}
-                        </span>
-                      </div>
-                    ) : (
-                      /* Delete button on hover */
-                      <button
-                        onClick={() => removePhoto(i)}
-                        className="absolute top-[4px] right-[4px] w-[22px] h-[22px] rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                        aria-label="Remove photo"
-                      >
-                        <RiDeleteBinLine size={12} />
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-
-              {/* Add more */}
-              {photos.length < MAX_PHOTOS && (
-                <button
-                  onClick={() => photosRef.current?.click()}
-                  className="w-[120px] h-[90px] rounded-[6px] border border-dashed border-[#C6C6C6] flex items-center justify-center hover:border-accent transition-colors"
-                >
-                  <RiAddLine size={20} className="text-[#B0B0B0]" />
-                </button>
-              )}
-            </>
-          )}
-        </div>
-
-        {photos.length > 0 && (
-          <p className="text-[12px] font-neue text-[#6B6B6B] mt-[10px]">
-            {photos.length} of {MAX_PHOTOS} media uploaded
-          </p>
-        )}
-
         <input
-          ref={photosRef}
           type="file"
-          accept=".jpg,.jpeg,.png,.webp"
-          multiple
-          className="hidden"
-          onChange={(e) => handlePhotoFiles(e.target.files)}
+          accept="image/*"
+          onChange={handleFileChange}
         />
       </div>
 
-      {/* CONTACT DETAILS — returning owners only */}
-      {showContactDetails && (
-        <div className="mb-[36px]">
-          <p className={labelCls}>Contact details</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px]">
-            <div>
-              <label className="block text-[13px] font-rethink text-[#6B6B6B] mb-[8px]">
-                Phone number
-              </label>
-              <input
-                type="tel"
-                placeholder="+234 801 234 5678"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className={inputCls}
-              />
-            </div>
-            <div>
-              <label className="block text-[13px] font-rethink text-[#6B6B6B] mb-[8px]">
-                WhatsApp number
-              </label>
-              <input
-                type="tel"
-                placeholder="+234 801 234 5678"
-                value={whatsapp}
-                onChange={(e) => setWhatsapp(e.target.value)}
-                className={inputCls}
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
-<div className="border-t border-[#c6c6c6]/40 mt-8 mb-4 pt-4 flex gap-3"></div>
+      <div className="border-t border-[#c6c6c6]/40 mt-8 mb-4 pt-4 flex gap-3"></div>
 
       {/* BUTTONS */}
       <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-[12px]">
@@ -501,11 +275,10 @@ function ListPropertyForm({
         <button
           onClick={handlePublish}
           disabled={!canPublish}
-          className={`w-full sm:w-auto h-[46px] px-[28px] rounded-[6px] text-[14px] font-rethink font-medium transition-colors ${
-            canPublish
-              ? "bg-accent text-white hover:bg-[#e56e00]"
-              : "bg-[#E8E8E8] text-[#B0B0B0] cursor-not-allowed"
-          }`}
+          className={`w-full sm:w-auto h-[46px] px-[28px] rounded-[6px] text-[14px] font-rethink font-medium transition-colors ${canPublish
+            ? "bg-accent text-white hover:bg-[#e56e00]"
+            : "bg-[#E8E8E8] text-[#B0B0B0] cursor-not-allowed"
+            }`}
         >
           Publish listing
         </button>

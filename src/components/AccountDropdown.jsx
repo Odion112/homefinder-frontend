@@ -34,6 +34,8 @@ function AccountDropdown({ user, role, onClose, onProfileOpen }) {
       type: "loggedOut"
     })
 
+    sessionStorage.removeItem("token")
+    window.location.href = "/"
     navigate("/")
 
   }

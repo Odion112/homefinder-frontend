@@ -6,14 +6,10 @@ export const TokenDispatchContext = createContext(null)
 function tokenReducer(oldToken, action) {
     switch (action.type) {
         case "loggedIn": {
-            return {
-                ...oldToken, token: action.payload
-            }
+            return action.payload
         }
         case "loggedOut": {
-            return {
-                token: null
-            }
+            return null
         }
         default: { }
     }
@@ -21,7 +17,7 @@ function tokenReducer(oldToken, action) {
 
 export default function TokenProvider({ children }) {
 
-    const [token, dispatch] = useReducer(tokenReducer, { token: null })
+    const [token, dispatch] = useReducer(tokenReducer, null)
 
     return (
         <TokenContext.Provider value={token}>

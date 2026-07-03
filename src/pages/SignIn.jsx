@@ -40,6 +40,7 @@ export default function SignInPage() {
           type: "loggedIn",
           payload: response
         })
+        sessionStorage.setItem("token", response)
         navigate("/")
       }
     } catch (error) {

@@ -40,6 +40,7 @@ export default function SignUpPage() {
           type: "loggedIn",
           payload: token
         })
+        sessionStorage.setItem("token", token)
         currentToken = { token }
       }
 
