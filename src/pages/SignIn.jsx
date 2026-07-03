@@ -54,7 +54,7 @@ export default function SignInPage() {
     <div className="flex min-h-screen w-full font-neue">
 
       {/* LEFT SIDE*/}
-      <div className="relative hidden lg:block w-[52%] flex-shrink-0">
+      <div className="relative hidden lg:block w-[52%] shrink-0">
 
         {/* Hero image */}
         <img
