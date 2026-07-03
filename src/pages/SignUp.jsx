@@ -15,6 +15,8 @@ export default function SignUpPage() {
   let currentToken = useContext(TokenContext)
   const tokenDispatch = useContext(TokenDispatchContext)
 
+  console.log(currentToken)
+
   const navigate = useNavigate()
 
   const [data, setData] = useState({
@@ -34,7 +36,7 @@ export default function SignUpPage() {
       const createData = await signUp(data)
 
       if (createData) {
-        setShowRoleModal(true)
+        // setShowRoleModal(true)
         const token = await signIn({ email: data.email, password: data.password })
         tokenDispatch({
           type: "loggedIn",
@@ -42,6 +44,11 @@ export default function SignUpPage() {
         })
         sessionStorage.setItem("token", token)
         currentToken = { token }
+
+        setIsLoading(false)
+        alert("Account created successfully")
+
+        navigate("/sign-in")
       }
 
     } catch (error) {
@@ -59,7 +66,7 @@ export default function SignUpPage() {
         body: JSON.stringify({ role: data }),
         headers: {
           "Content-type": "application/json",
-          "Authorization": `Bearer ${currentToken.token}`
+          "Authorization": `Bearer ${currentToken}`
         }
       })
 
@@ -101,7 +108,7 @@ export default function SignUpPage() {
       <div className="flex min-h-screen w-full font-neue">
 
         {/* LEFTSIDE */}
-        <div className="relative w-[52%] shrink-0">
+        <div className="relative lg:w-[52%] shrink-0">
 
           {/* Hero image */}
           <img

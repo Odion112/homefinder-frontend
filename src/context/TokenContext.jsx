@@ -9,7 +9,7 @@ function tokenReducer(oldToken, action) {
             return action.payload
         }
         case "loggedOut": {
-            return null
+            return {token: null}
         }
         default: { }
     }
@@ -17,7 +17,7 @@ function tokenReducer(oldToken, action) {
 
 export default function TokenProvider({ children }) {
 
-    const [token, dispatch] = useReducer(tokenReducer, null)
+    const [token, dispatch] = useReducer(tokenReducer, {token:null})
 
     return (
         <TokenContext.Provider value={token}>
