@@ -2,8 +2,8 @@
 
 import client from "./api";
 
-// const baseUrl = "https://homefinder-backend-hxp6.onrender.com"
-const baseUrl = "http://localhost:8080"
+const baseUrl = "https://homefinder-backend-hxp6.onrender.com"
+// const baseUrl = "http://localhost:8080"
 
 export async function signUp(data) {
     try {
