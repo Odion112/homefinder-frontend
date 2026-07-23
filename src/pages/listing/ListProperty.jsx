@@ -1,22 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { RiCloseLine, RiCheckLine, RiArrowLeftLine } from "react-icons/ri";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import ListingProgressBar from "../../components/listing/ListingProgressBar";
 import ListPropertyForm from "../../components/listing/ListPropertyForm";
 import ConfirmDialog from "../../components/ConfirmDialog";
-import Button from "../../components/Button";
 import { createListing } from "../../utils/fn";
 
-// Replace with real user email from auth context
-const MOCK_USER_EMAIL = "johndoe@email.com";
-
-const CLOUD_NAME = "deyp75nnw"
-const UPLOAD_PRESET = "capstones"
+const CLOUD_NAME = "deyp75nnw";
+const UPLOAD_PRESET = "capstones";
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
 
-async function uploadImageToCloudinary(file) {
+async function uploadFileToCloudinary(file) {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", UPLOAD_PRESET);
@@ -28,93 +23,118 @@ async function uploadImageToCloudinary(file) {
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data?.error?.message || "Image upload failed");
+    throw new Error(data?.error?.message || "File upload failed");
   }
   return data.secure_url;
 }
 
-const inputCls =
-  "w-full h-[48px] border border-[#E8E8E8] rounded-[6px] px-[14px] text-[14px] font-neue text-[#1A1A1A] placeholder:text-[#B0B0B0] focus:outline-none focus:border-accent transition-colors";
-
-const labelCls =
-  "block text-[14px] font-neue font-roman text-[#1A1A1A] mb-[8px]";
-
-const PROPERTY_TYPES = [
-  "apartment",
-  "self-contained",
-  "duplex",
-  "bungalow",
-  "room&parlour",
-  "office space",
-];
-
-const MAX_PHOTOS = 1;
-
-function ChevronDown() {
-  return (
-    <svg
-      className="absolute right-[14px] top-1/2 -translate-y-1/2 pointer-events-none"
-      width="14" height="14" viewBox="0 0 14 14" fill="none"
-    >
-      <path
-        d="M3 5L7 9L11 5"
-        stroke="#6B6B6B" strokeWidth="1.5"
-        strokeLinecap="round" strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function ListProperty() {
+// isReturningOwner: true when this owner has published before, so the form
+// skips step 1 and asks for phone/WhatsApp instead. Wire this to your real
+// auth/user data — left as a prop for now so nothing is assumed about how
+// that's determined.
+function ListProperty({ isReturningOwner = false }) {
   const navigate = useNavigate();
-
   const token = sessionStorage.getItem("token");
 
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
-  const [pendingDestination, setPendingDest] = useState(null);
   const [showPendingModal, setShowPendingModal] = useState(false);
+  const [publishedListing, setPublishedListing] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const [addPropertyData, setAddPropertyData] = useState({
-    title: "",
-    propertyType: "",
-    amount: "",
-    description: "",
-    location: "",
-    photo: null
-  })
+  // Back arrow: returns to step 1 (owner setup) — no confirmation, since
+  // nothing is being discarded, just navigated away from. Only shown for
+  // first-timers; returning owners skip step 1 entirely.
+  function handleBack() {
+    navigate(-1);
+  }
 
-
+  // Cancel button: this is the one that discards the in-progress listing,
+  // so it's the only trigger for the stay/leave dialog.
+  function handleCancel() {
+    setShowLeaveDialog(true);
+  }
 
   function handleLeaveConfirm() {
     setShowLeaveDialog(false);
-    navigate(pendingDestination);
+    navigate(-1);
   }
 
   function handleLeaveCancel() {
     setShowLeaveDialog(false);
-    setPendingDest(null);
   }
 
-
-
-  const [isLoading, setIsLoading] = useState(false);
-
-
-  async function handleSubmit(e) {
-    e.preventDefault();
+  // This is the onPublish callback — ListPropertyForm calls it with the
+  // full, already-validated form object once "Publish listing" is clicked.
+  async function handlePublish(formData) {
     setIsLoading(true);
+    setError(null);
     try {
-      if (!addPropertyData.photo) {
-        const imageUrl = await uploadImageToCloudinary(addPropertyData.photo);
-        setAddPropertyData({ ...addPropertyData, photo: imageUrl })
-        const response = await createListing(addPropertyData, token)
-        console.log(response)
+      const photoUrls = await Promise.all(
+        formData.photos.map((p) => uploadFileToCloudinary(p.file))
+      );
+      const supportDocUrl = await uploadFileToCloudinary(formData.supportDoc.file);
+
+      const payload = {
+        title: formData.title,
+        propertyType: formData.propertyType,
+        amount: formData.price,
+        description: formData.description,
+        location: formData.address,
+        state: formData.state,
+        area: formData.area,
+        bedrooms: formData.bedrooms,
+        bathrooms: formData.bathrooms,
+        amenities: formData.amenities,
+        photos: photoUrls,
+        supportDoc: supportDocUrl,
+        ...(isReturningOwner && {
+          phone: formData.phone,
+          whatsapp: formData.whatsapp,
+        }),
+      };
+
+      const response = await createListing(payload, token);
+
+      // Shaped to match what MyListingCard/MyListings actually render —
+      // a single `image` (not the full photos array), and `location` as
+      // one display string, the same way INITIAL_LISTINGS is written.
+      const listingForDisplay = {
+        id: response?.id,
+        image: photoUrls[0],
+        title: formData.title,
+        location: `${formData.area}, ${formData.state}`,
+        price: formData.price,
+      };
+
+      if (isReturningOwner) {
+        // Returning/verified owners go straight to the listing's own
+        // details page — no verification step for them.
+        navigate(`/my-listings/${response?.id}`, {
+          state: { listing: { ...listingForDisplay, status: "published" } },
+        });
+      } else {
+        // First-time listers see a "pending verification" modal before
+        // being routed to My Listings — the listing isn't live yet.
+        setPublishedListing({ ...listingForDisplay, status: "pending verification" });
+        setShowPendingModal(true);
       }
-    } catch (error) {
-      console.error("Error submitting property data:", error);
+    } catch (err) {
+      console.error("Error submitting property data:", err);
+      setError(
+        err?.message ||
+          "Something went wrong while publishing. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function handlePendingModalOk() {
+    setShowPendingModal(false);
+    // My Listings reads this from location.state and shows the new card
+    // with a "pending verification" badge.
+    navigate("/my-listings", { state: { newListing: publishedListing } });
   }
 
   return (
@@ -122,139 +142,28 @@ function ListProperty() {
       <Navbar />
 
       <main className="flex-1 px-[20px] py-[20px] pb-[120px]">
-        {/* HEADING */}
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white border border-[#C6C6C6]/40 shadow-md rounded-[4px] p-5 sm:p-8 lg:p-[48px] w-full max-w-[900px] mx-auto">
+        <div className="max-w-[900px] mx-auto mb-[24px]">
+          <ListingProgressBar currentStep={2} />
+        </div>
 
-          <div className="flex items-start sm:items-center gap-[12px] mb-[28px] sm:mb-[32px]">
+        {error && (
+          <p className="max-w-[900px] mx-auto mb-[16px] text-[14px] font-neue text-[#D85A30]">
+            {error}
+          </p>
+        )}
 
-            <button
-              onClick={() => navigate(-1)}
-              className="text-[#1A1A1A] hover:text-accent transition-colors"
-              aria-label="Go back"
-              type="button"
-              disabled={isLoading}
-            >
-              <RiArrowLeftLine size={20} />
-            </button>
-
-            <h1 className="text-[24px] sm:text-[28px] font-neue font-medium text-[#1A1A1A] leading-tight">
-              Tell us about your property
-            </h1>
-          </div>
-
-          {/* PROPERTY TITLE */}
-          <div className="mb-[20px]">
-            <label className={labelCls}>Property title</label>
-            <input
-              type="text"
-              placeholder="e.g. 2-bedroom flat"
-              value={addPropertyData.title}
-              onChange={(e) => setAddPropertyData({ ...addPropertyData, title: e.target.value })}
-              className={inputCls}
-              required
-            />
-          </div>
-
-          {/* TYPE + PRICE */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-[16px] mb-[20px]">
-            <div>
-              <label className={labelCls}>Property type</label>
-              <div className="relative">
-                <select
-                  value={addPropertyData.propertyType}
-                  required
-                  onChange={(e) => setAddPropertyData({ ...addPropertyData, propertyType: e.target.value })}
-                  className={`${inputCls} appearance-none pr-[36px]`
-
-                  }
-                >
-                  <option value="" disabled>Select here</option>
-                  {PROPERTY_TYPES.map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-                <ChevronDown />
-              </div>
-            </div>
-            <div>
-              <label className={labelCls}>Price (₦ / year)</label>
-              <input
-                type="text"
-                placeholder="e.g. 800,000"
-                value={addPropertyData.amount}
-                onChange={(e) => setAddPropertyData({ ...addPropertyData, amount: e.target.value })}
-                className={inputCls}
-                required
-
-              />
-            </div>
-          </div>
-
-          {/* DESCRIPTION */}
-          <div className="mb-[20px]">
-            <label className={labelCls}>Description</label>
-            <textarea
-              placeholder="Well-maintained flat with 24hr electricity..."
-              value={addPropertyData.description}
-              onChange={(e) => setAddPropertyData({ ...addPropertyData, description: e.target.value })}
-              rows={4}
-              className="w-full border border-[#E8E8E8] rounded-[6px] px-[14px] py-[12px] text-[14px] font-neue text-[#1A1A1A] placeholder:text-[#B0B0B0] focus:outline-none focus:border-accent transition-colors resize-none"
-            />
-          </div>
-
-          {/* ADDRESS */}
-          <div className="mb-[20px]">
-            <label className={labelCls}>Property Location</label>
-            <input
-              type="text"
-              placeholder="eg. 15, Adewale Street, Ifako, Gbagada, Lagos State Nigeria"
-              value={addPropertyData.location}
-              onChange={(e) => setAddPropertyData({ ...addPropertyData, location: e.target.value })}
-              className={inputCls}
-              required
-
-            />
-          </div>
-
-          {/* PROPERTY PHOTOS */}
-          <div className="mb-[28px]">
-            <p className={labelCls}>Property photo</p>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={e => setAddPropertyData({ ...addPropertyData, photo: e.target.files[0] })}
-              multiple={false}
-              className={`file:mr-[12px] file:bg-[#F5F5F5] file:border file:border-[#E8E8E8] file:text-[14px] file:font-rethink`}
-            />
-          </div>
-
-          {/* BUTTONS */}
-          <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-[12px]">
-            <button
-              type="button"
-              disabled={isLoading}
-              onClick={() => navigate(-1)}
-              className="w-full sm:w-auto h-[46px] px-[28px] border border-[#E8E8E8] rounded-[6px] text-[14px] font-rethink font-medium text-[#1A1A1A] hover:bg-[#F5F5F5] transition-colors"
-            >
-              Cancel
-            </button>
-            <Button
-              type="submit"
-              loading={isLoading}
-              disabled={isLoading}
-            >
-              Publish listing
-            </Button>
-
-          </div>
-        </form>
+        <ListPropertyForm
+          showBackArrow={!isReturningOwner}
+          showContactDetails={isReturningOwner}
+          onBack={handleBack}
+          onCancel={handleCancel}
+          onPublish={handlePublish}
+          loading={isLoading}
+        />
       </main>
 
       <Footer />
 
-      {/*Leave listing dialog  */}
       {showLeaveDialog && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <ConfirmDialog
@@ -269,6 +178,26 @@ function ListProperty() {
         </div>
       )}
 
+      {showPendingModal && !isReturningOwner && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-[8px] max-w-[420px] w-full mx-[16px] p-[28px] text-center">
+            <h2 className="text-[18px] font-neue font-medium text-[#1A1A1A] mb-[8px]">
+              Listing submitted
+            </h2>
+            <p className="text-[14px] font-neue text-[#6B6B6B] mb-[24px]">
+              Your listing is pending verification. Our team will review it and
+              list it as soon as possible.
+            </p>
+            <button
+              type="button"
+              onClick={handlePendingModalOk}
+              className="h-[46px] px-[28px] rounded-[6px] bg-accent text-white text-[14px] font-rethink font-medium hover:bg-[#e56e00] transition-colors"
+            >
+              Ok
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

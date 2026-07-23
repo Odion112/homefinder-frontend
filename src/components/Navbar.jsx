@@ -27,9 +27,15 @@ function Navbar() {
 
     if (role === "tenant") return "/owner-setup";
 
-    if (role === "owner") return "/list-property";
+    if (role === "owner") return "/existing-owner-list";
 
     return "/";
+  }
+
+  function getLogoRoute() {
+    if (role === "guest") return "/";
+
+    return "/properties";
   }
 
     useEffect(() => {
@@ -48,7 +54,7 @@ function Navbar() {
         <div className="h-full flex items-center justify-between">
 
           {/* LOGO */}
-          <Link to="/" onClick={() => setMobileMenuOpen(false)}>
+          <Link to={getLogoRoute()} onClick={() => setMobileMenuOpen(false)}>
             <img src={logo} alt="HomeFinder Logo" className="w-[150px] sm:w-[170px] lg:w-[190px]" />
           </Link>
 

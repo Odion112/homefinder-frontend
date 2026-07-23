@@ -2,10 +2,10 @@ import { useRef, useState, useEffect } from "react";
 import { PiMapPinLight } from "react-icons/pi";
 import { BsThreeDots } from "react-icons/bs";
 import { LuHouse, LuPencil, LuTrash2 } from "react-icons/lu";
-import { FiCheck } from "react-icons/fi";
+import { FiCheck, FiClock } from "react-icons/fi";
 
 //  PUBLISHED DROPDOWN
-function PublishedDropdown({ onAction, onClose }) {
+export function PublishedDropdown({ onAction, onClose }) {
   const [hovered, setHovered] = useState(null);
   const ref = useRef(null);
 
@@ -46,7 +46,12 @@ function PublishedDropdown({ onAction, onClose }) {
         <button
           key={id}
           role="menuitem"
-          onClick={() => { onAction(id); onClose(); }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onAction(id);
+            onClose();
+          }}
           onMouseEnter={() => setHovered(id)}
           onMouseLeave={() => setHovered(null)}
           className="
@@ -73,7 +78,7 @@ function PublishedDropdown({ onAction, onClose }) {
 }
 
 // RENTED-OUT DROPDOWN 
-function RentedDropdown({ onAction, onClose }) {
+export function RentedDropdown({ onAction, onClose }) {
   const [hovered, setHovered] = useState(false);
   const ref = useRef(null);
 
@@ -105,7 +110,12 @@ function RentedDropdown({ onAction, onClose }) {
     >
       <button
         role="menuitem"
-        onClick={() => { onAction("edit"); onClose(); }}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onAction("delete");
+          onClose();
+        }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         className="
@@ -124,8 +134,82 @@ function RentedDropdown({ onAction, onClose }) {
   );
 }
 
+// PENDING-VERIFICATION DROPDOWN
+// No "Mark as Rented" here — the listing isn't live yet, so that action
+// doesn't make sense until it's actually published.
+export function PendingDropdown({ onAction, onClose }) {
+  const [hovered, setHovered] = useState(null);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) onClose();
+    };
+    const handleKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [onClose]);
+
+  const items = [
+    { id: "edit",   label: "Edit Listing",   Icon: LuPencil,  danger: false },
+    { id: "delete", label: "Delete Listing", Icon: LuTrash2,  danger: true  },
+  ];
+
+  return (
+    <div
+      ref={ref}
+      role="menu"
+      className="
+        absolute right-0 bottom-[calc(100%+6px)] z-50
+        bg-white rounded-[10px] p-[16px]
+        flex flex-col gap-[2px]
+        min-w-[200px]
+        border border-[#E5E5E5]
+        shadow-[0px_8px_24px_rgba(0,0,0,0.08)]
+        font-rethink
+      "
+    >
+      {items.map(({ id, label, Icon, danger }) => (
+        <button
+          key={id}
+          role="menuitem"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onAction(id);
+            onClose();
+          }}
+          onMouseEnter={() => setHovered(id)}
+          onMouseLeave={() => setHovered(null)}
+          className="
+            flex items-center gap-[10px]
+            px-4 py-[12px] rounded-[7px]
+            border-none w-full text-left
+            text-[14px] font-medium leading-none
+            transition-colors duration-[120ms]
+            cursor-pointer
+          "
+          style={{
+            color:           danger ? "#EA0000" : "#0E0D0C",
+            backgroundColor: hovered === id
+              ? danger ? "rgba(234,0,0,0.04)" : "#F5F5F5"
+              : "transparent",
+          }}
+        >
+          <Icon size={16} strokeWidth={1.6} style={{ flexShrink: 0 }} />
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 //  MAIN CARD 
-// status = "published" | "rented-out"
+// status = "published" | "rented-out" | "pending verification"
 export default function MyListingCard({
   image,
   title,
@@ -178,22 +262,35 @@ export default function MyListingCard({
         {/* STATUS & MORE BUTTON */}
         <div className="flex items-center justify-between mt-1">
 
-          {status === "published" ? (
+          {status === "published" && (
             <div className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#EDFAF3] text-[#27AE60]">
               <FiCheck className="text-[13px]" strokeWidth={2.5} />
               <span className="text-[13px] font-neue font-light">Published</span>
             </div>
-          ) : (
+          )}
+
+          {status === "rented-out" && (
             <div className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#EEF0FF] text-[#5B67CA]">
               <LuHouse className="text-[13px]" strokeWidth={1.8} />
               <span className="text-[13px] font-neue font-light">Rented out</span>
             </div>
           )}
 
+          {status === "pending verification" && (
+            <div className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#FFF4E5] text-[#B5750D]">
+              <FiClock className="text-[13px]" strokeWidth={2.2} />
+              <span className="text-[13px] font-neue font-light">Pending verification</span>
+            </div>
+          )}
+
           {/* MORE BUTTON + DROPDOWn*/}
           <div className="relative">
             <button
-              onClick={() => setOpen((v) => !v)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpen((v) => !v);
+              }}
               className="
                 flex items-center justify-center
                 w-8 h-8 rounded-full text-[#696262]
@@ -219,6 +316,13 @@ export default function MyListingCard({
                 onClose={() => setOpen(false)}
               />
             )}
+
+            {open && status === "pending verification" && (
+              <PendingDropdown
+                onAction={(type) => onAction?.(type)}
+                onClose={() => setOpen(false)}
+              />
+            )}
           </div>
 
         </div>
@@ -226,45 +330,3 @@ export default function MyListingCard({
     </div>
   );
 }
-
-// ─── HOW TO USE ────────────────────────────────────────────────────────────────
-//
-// import MyListingCard from "./MyListingCard";
-// import ConfirmDialog from "./ConfirmDialog";
-//
-// const [pendingAction, setPendingAction] = useState(null);
-//
-// const handleAction = (type) => {
-//   // "edit" goes straight to edit flow, others open ConfirmDialog
-//   if (type === "edit") {
-//     navigate("/edit-listing/" + listingId);
-//   } else {
-//     setPendingAction(type); // "rent" | "delete"
-//   }
-// };
-//
-// <MyListingCard
-//   image={PropertyImage}
-//   title="4 Bedroom Duplex"
-//   location="Lekki Phase 1, Lagos"
-//   price="7.5M"
-//   status="published"
-//   onAction={handleAction}
-// />
-//
-// <MyListingCard
-//   image={PropertyImage2}
-//   title="4 Bedroom Bungalow"
-//   location="Lekki Phase 2, Lagos"
-//   price="7.5M"
-//   status="rented-out"
-//   onAction={handleAction}
-// />
-//
-// {pendingAction && (
-//   <ConfirmDialog
-//     action={pendingAction}
-//     onClose={() => setPendingAction(null)}
-//     onConfirm={() => { /* handle */ setPendingAction(null); }}
-//   />
-// )}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 
 import ConfirmDialog from "./ConfirmDialog";
 import Dropdown from "./Dropdown";
@@ -22,6 +22,8 @@ const REPORT_REASONS = [
 const MASKED_NUMBER = "+234 701 *** ****";
 
 export default function LandlordCard({ landlord, isGuest = false }) {
+  const navigate = useNavigate();
+
   const {
     name = "Jamiu Peters",
     verified = true,
@@ -36,6 +38,7 @@ export default function LandlordCard({ landlord, isGuest = false }) {
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMessage, setAuthMessage] = useState("");
   const [callCopied, setCallCopied] = useState(false);
 
   const isFormReady = reason.trim() !== "";
@@ -45,8 +48,17 @@ export default function LandlordCard({ landlord, isGuest = false }) {
     setReportState("submitted");
   }
 
-  function handleGuestTap() {
+  function handleGuestTap(message) {
+    setAuthMessage(message);
     setShowAuthModal(true);
+  }
+
+  function handleReportTap() {
+    if (isGuest) {
+      handleGuestTap("Sign in to report this listing.");
+      return;
+    }
+    setReportState("open");
   }
 
   function handleCallClick() {
@@ -114,7 +126,7 @@ export default function LandlordCard({ landlord, isGuest = false }) {
           {/* Call button */}
           {isGuest ? (
             <button
-              onClick={handleGuestTap}
+              onClick={() => handleGuestTap("Sign in to call this landlord.")}
               className="w-full h-[62px] flex items-center justify-center gap-2 bg-[#FE7C0B] hover:bg-[#f87808] text-white rounded-sm text-sm font-medium font-rethink transition-colors"
             >
               <IoCallOutline size={18} />
@@ -138,7 +150,7 @@ export default function LandlordCard({ landlord, isGuest = false }) {
           {/* WhatsApp button */}
           {isGuest ? (
             <button
-              onClick={handleGuestTap}
+              onClick={() => handleGuestTap("Sign in to message this landlord on WhatsApp.")}
               className="w-full h-[62px] flex items-center justify-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-800 rounded-sm text-sm font-medium font-rethink transition-colors"
               style={{ borderRadius: "2px" }}
             >
@@ -146,8 +158,8 @@ export default function LandlordCard({ landlord, isGuest = false }) {
               {MASKED_NUMBER}
             </button>
           ) : (
-            <a
-              href={`https://wa.me/${String(whatsapp).replace(/\D/g, "")}`}
+            
+              <a href={`https://wa.me/${String(whatsapp).replace(/\D/g, "")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full h-[62px] flex items-center justify-center gap-2 border rounded-sm border-gray-300 hover:bg-gray-50 text-gray-800 text-sm font-medium font-rethink transition-colors"
@@ -163,7 +175,7 @@ export default function LandlordCard({ landlord, isGuest = false }) {
         {/* Report section */}
         {reportState === "idle" && (
           <button
-            onClick={() => setReportState("open")}
+            onClick={handleReportTap}
             className="flex items-center gap-2 text-[#696262] hover:text-gray-700 font-rethink font-medium text-[15px] mx-auto transition-colors"
           >
             <PiFlagPennant size={18} />
@@ -246,7 +258,16 @@ export default function LandlordCard({ landlord, isGuest = false }) {
       </div>
 
       {showAuthModal && (
-        <ConfirmDialog onClose={() => setShowAuthModal(false)} />
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+          <ConfirmDialog
+            title="Sign in required"
+            message={authMessage}
+            confirmLabel="Sign in"
+            confirmColor="#FE7C0B"
+            onCancel={() => setShowAuthModal(false)}
+            onConfirm={() => navigate('/sign-in')}
+          />
+        </div>
       )}
     </>
   );
