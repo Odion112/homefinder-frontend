@@ -30,9 +30,9 @@ function OwnerSetupPage() {
   }
 
   function handleContinue(formData) {
-    console.log("Step 1 data:", formData);
-    navigate("/list-property/details");
-  }
+  console.log("Step 1 data:", formData);
+  navigate("/list-property");
+}
 
   return (
     <div className="min-h-screen flex flex-col bg-white">

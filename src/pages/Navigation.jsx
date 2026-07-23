@@ -10,6 +10,10 @@ import PropertyDetails from "./PropertyDetails";
 import OwnerSetup from "./listing/OwnerSetup";
 import ListProperty from "./listing/ListProperty";
 import ExistingOwnerList from "./listing/ExistingOwnerList";
+import MyListingDetails from "./listing/MyListingDetails";
+import EditListing from "./listing/EditListing";
+
+
 import { useContext, useEffect } from "react";
 import { TokenContext } from "../context/TokenContext";
 import { ProfileDispatchContext } from "../context/ProfileContext"
@@ -18,9 +22,6 @@ import MyListings from "./listing/MyListings";
 import { useGetProfile } from "../hooks/useGetProfile";
 
 export default function Navigation() {
-  // Safely read token from sessionStorage — it may be a raw string (JWT)
-  // or JSON. Avoid throwing when value is not valid 
-
   const value = sessionStorage.getItem("token")
   console.log(value)
   const tokenPayload = useContext(TokenContext)
@@ -34,7 +35,6 @@ export default function Navigation() {
 
   const profile = data
 
-
   return (
     <Routes>
       {/* Public Pages */}
@@ -46,12 +46,22 @@ export default function Navigation() {
       <Route path="/sign-in" element={<SignIn />} />
       <Route path="/sign-up" element={<SignUp />} />
 
-      {/* Listing Flow */}
+      {/* List-a-property flow — reachable by tenants (onboarding step 2)
+          and owners (their normal entry point) */}
+      {(profile?.role === "tenant" || profile?.role === "owner") && (
+        <>
+          <Route path="/owner-setup" element={<OwnerSetup />} />
+          <Route path="/list-property" element={<ListProperty />} />
+        </>
+      )}
+
+      {/* Owner-only */}
       {(profile?.role === "owner") && (
         <>
-          <Route path="/list-property" element={<ListProperty />} />
-          <Route path="/owner-setup" element={<OwnerSetup />} />
+          <Route path="/existing-owner-list" element={<ExistingOwnerList />} />
           <Route path="/my-listings" element={<MyListings />} />
+           <Route path="/my-listings/:id" element={<MyListingDetails />} />
+           <Route path="/edit-listing/:id" element={<EditListing />} />
         </>
       )
       }

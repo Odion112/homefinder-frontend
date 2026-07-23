@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useParams } from "react-router-dom";
-
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 import {
   PiArrowLeft,
@@ -23,6 +22,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import AmenityTag from "../components/AmenityTag";
 import LandlordCard from "../components/LandlordCard";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 // Replace with real images coming from the backend/property data
 import propertyImageOne from "../assets/images/property14.svg";
@@ -73,12 +73,20 @@ const landlordData = {
 
 
 export default function PropertyDetails() {
-   const { id } = useParams();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const profile = queryClient.getQueryData(['profile']);
+  const role = profile?.role || 'guest';
+  const isGuest = role === 'guest';
+
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [showFullVerification, setShowFullVerification] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [featuredImage, setFeaturedImage] = useState(GALLERY_IMAGES[0]);
   const [showAllPhotos, setShowAllPhotos] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   
 
@@ -98,11 +106,19 @@ export default function PropertyDetails() {
     });
   }
 
+  function handleShareClick() {
+    if (isGuest) {
+      setShowAuthModal(true);
+      return;
+    }
+    handleShare();
+  }
+
   return (
     <>
       <Navbar />
 
-      <main className="pt-5 lg:pt-8">
+      <main className=" bg-[#FDFDFD] pt-5 lg:pt-8">
         <div className="w-full">
           <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-1.5">
             <img
@@ -222,7 +238,7 @@ export default function PropertyDetails() {
               </span>
             )}
             <button
-              onClick={handleShare}
+              onClick={handleShareClick}
               className="h-10 px-5 flex items-center gap-2 border border-[#C6C6C6] rounded-[3px] text-sm font-rethink font-normal text-[#0E0D0C] hover:bg-gray-50 transition-colors"
             >
               <PiShareNetwork size={18} />
@@ -303,13 +319,26 @@ export default function PropertyDetails() {
 
           {/* RIGHT COLUMN */}
           <div className="lg:sticky lg:top-10 self-start w-full">
-  <LandlordCard landlord={landlordData} isGuest={false} />
-</div>
+            <LandlordCard landlord={landlordData} isGuest={isGuest} />
+          </div>
         </div>
         </div>
       </main>
 
       <Footer />
+
+      {showAuthModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+          <ConfirmDialog
+            title="Sign in required"
+            message="Sign in to share this listing."
+            confirmLabel="Sign in"
+            confirmColor="#FE7C0B"
+            onCancel={() => setShowAuthModal(false)}
+            onConfirm={() => navigate('/sign-in')}
+          />
+        </div>
+      )}
     </>
   );
 }

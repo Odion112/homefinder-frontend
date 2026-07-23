@@ -1,4 +1,4 @@
-import { useState, forwardRef, useContext } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { PiEyeLight, PiEyeSlashLight } from "react-icons/pi";
 import Logo from "../assets/images/logo-white.svg";
@@ -21,17 +21,19 @@ export default function SignInPage() {
 
   const [isLoading, setIsLoading] = useState(false)
   const [showPwd, setShowPwd] = useState(false);
-  const [errorType, setErrorType] = useState(null); // null | "wrong-password" | "no-account"
+  const [errorType, setErrorType] = useState(null); // null | "wrong-password" | "no-account" | "unknown"
 
   const emailError = errorType === "no-account" ? "No account found with this email." : "";
   const passwordError = errorType === "wrong-password" ? "Incorrect email or password. Please try again." : "";
-  const globalError = errorType === "wrong-password" ? "Incorrect email or password. Please try again."
+  const globalError = errorType === "unknown" ? "Something went wrong. Please try again."
+    : errorType === "wrong-password" ? "Incorrect email or password. Please try again."
     : errorType === "no-account" ? "No account found with this email."
       : "";
 
   async function handleLogin(e) {
+    e.preventDefault()
+    setErrorType(null)
     try {
-      e.preventDefault()
       setIsLoading(true)
 
       const response = await signIn(data)
@@ -41,10 +43,21 @@ export default function SignInPage() {
           payload: response
         })
         sessionStorage.setItem("token", response)
-        navigate("/")
+        navigate("/properties")
       }
     } catch (error) {
       console.log(error)
+
+      const status = error?.statusCode
+      const message = error?.data?.message?.toLowerCase() || ""
+
+      if (status === 404 || message.includes("no account") || message.includes("not found")) {
+        setErrorType("no-account")
+      } else if (status === 400 || status === 401 || message.includes("password") || message.includes("incorrect")) {
+        setErrorType("wrong-password")
+      } else {
+        setErrorType("unknown")
+      }
     } finally {
       setIsLoading(false)
     }
@@ -56,17 +69,14 @@ export default function SignInPage() {
       {/* LEFT SIDE*/}
       <div className="relative hidden lg:block w-[52%] shrink-0">
 
-        {/* Hero image */}
         <img
           src={HeroImage}
           alt="Modern home exterior"
           className="absolute inset-0 w-full h-full object-cover"
         />
 
-        {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/40" />
 
-        {/* Logo*/}
         <div className="absolute top-8 left-10 z-10">
           <img
             src={Logo}
@@ -75,7 +85,6 @@ export default function SignInPage() {
           />
         </div>
 
-        {/* Tagline */}
         <div className="absolute bottom-12 left-10 right-10 z-10">
           <h2 className="text-white font-neue font-medium text-3xl leading-tight mb-3">
             Simplify Your House-hunting Process
@@ -99,7 +108,6 @@ export default function SignInPage() {
 
           <form onSubmit={handleLogin} className="flex flex-col gap-6">
 
-            {/* Email field */}
             <InputField
               label="Email"
               placeholder="Enter your email"
@@ -109,14 +117,12 @@ export default function SignInPage() {
               error={emailError}
             />
 
-            {/* Password field  */}
             <InputField
               label="Password"
               placeholder="Enter your password"
               type={showPwd ? "text" : "password"}
               value={data.password}
               onChange={(e) => setData({ ...data, password: e.target.value })}
-
               error={passwordError}
               rightIcon={
                 <button
@@ -133,7 +139,6 @@ export default function SignInPage() {
               }
             />
 
-            {/* Login button */}
             <Button
               variant="filled"
               loading={isLoading}
@@ -142,7 +147,6 @@ export default function SignInPage() {
               Login
             </Button>
           </form>
-
 
           <p className="text-center text-sm text-[#6B6B6B] mt-6">
             Don't have any account?{" "}

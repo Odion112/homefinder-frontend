@@ -310,10 +310,10 @@ export default function Properties() {
 
           {/* FILTER PANEL */}
           {showFilters && (
-            <div className="w-full lg:shrink-0">
-              <FilterPanel onApply={handleApplyFilters} />
-            </div>
-          )}
+  <div className="w-full lg:w-auto lg:shrink-0">
+    <FilterPanel onApply={handleApplyFilters} />
+  </div>
+)}
 
           {/* PROPERTIES */}
           <div className="flex-1 min-w-0">
