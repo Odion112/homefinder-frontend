@@ -1,4 +1,4 @@
-import logo from "../assets/images/white-logo.svg";
+import logo from "../assets/images/logo-white.svg";
 import wordmark from "../assets/images/faded-logo.svg";
 import { GoArrowUp } from "react-icons/go";
 
@@ -235,7 +235,8 @@ export default function Footer() {
           src={wordmark}
           alt=""
           className="
-            w-full
+            w-[200px] sm:w-[200px] lg:w-[1150px]
+            opacity-10
             select-none
           "
         />

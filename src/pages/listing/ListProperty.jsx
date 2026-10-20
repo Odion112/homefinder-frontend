@@ -142,9 +142,13 @@ function ListProperty({ isReturningOwner = false }) {
       <Navbar />
 
       <main className="flex-1 px-[20px] py-[20px] pb-[120px]">
-        <div className="max-w-[900px] mx-auto mb-[24px]">
-          <ListingProgressBar currentStep={2} />
-        </div>
+        <ListingProgressBar
+        className="pb-[45px] pt-[55px]"
+        currentStep={2}
+        totalSteps={2}
+        label="Property Details"
+      />
+
 
         {error && (
           <p className="max-w-[900px] mx-auto mb-[16px] text-[14px] font-neue text-[#D85A30]">
