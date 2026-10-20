@@ -50,7 +50,7 @@ function Navbar() {
 
   return (
     <>
-      <nav className="h-[76px] lg:h-[102px] px-5 sm:px-8 lg:px-[60px] border-b border-[#C6C6C64A] bg-[#FDFDFD] relative z-40">
+      <nav className="h-[76px] lg:h-[102px] px-5 sm:px-8 lg:px-[60px] border-b border-[#C6C6C64A] bg-[#FDFDFD] sticky top-0 z-50">
         <div className="h-full flex items-center justify-between">
 
           {/* LOGO */}

@@ -4,9 +4,7 @@ import Footer from "../components/Footer";
 import HomePagePropertyCard from "../components/HomePagePropertyCard";
 import FeatureCard from "../components/FeatureCard";
 import AboutUs from "../components/AboutUs";
-
-// Hero
-import heroImage from "../assets/images/hero-house.svg";
+import Hero from "../components/Hero"; 
 
 // "You May Also Like" property cards 
 import Property1 from "../assets/images/property1.svg";
@@ -119,26 +117,9 @@ export default function HomePage() {
       <Navbar />
 
       {/* HERO */}
-      <section className="px-5 sm:px-8 lg:px-[60px] pt-5 lg:pt-8">
-        <div className="relative h-[430px] sm:h-[500px] lg:h-[570px] rounded-[6px] overflow-hidden">
-          <img
-            src={heroImage}
-            alt="Modern house exterior"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/65" />
-
-          <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-5 sm:px-6">
-            <h1 className="font-neue text-white text-[38px] sm:text-[46px] lg:text-[56px] leading-[1.1] max-w-[760px]">
-              Find your next house, not another agent
-            </h1>
-            <p className="mt-5 sm:mt-6 font-rethink text-white/90 text-[16px] sm:text-[18px] leading-[26px] sm:leading-[28px] max-w-[480px]">
-              Browse available rental properties and connect directly with
-              landlords to make finding a place simpler.
-            </p>
-          </div>
-        </div>
-      </section>
+      
+    {/* HERO */}
+    <Hero />
 
       {/* ABOUT SECTION */}
       <AboutUs />
@@ -167,6 +148,7 @@ export default function HomePage() {
           {similarListings.map((listing) => (
             <HomePagePropertyCard
               key={listing.id}
+              id={listing.id}
               image={listing.image}
               title={listing.title}
               location={listing.location}

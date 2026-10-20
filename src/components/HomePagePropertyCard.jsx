@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { PiMapPinLight } from "react-icons/pi";
 import { GoZap } from "react-icons/go";
 import { PiBathtub } from "react-icons/pi";
@@ -5,6 +6,7 @@ import { IoBedOutline } from "react-icons/io5";
 import VerifiedBadge from "./VerifiedBadge";
 
 export default function HomePagePropertyCard({
+  id,
   image,
   title,
   location,
@@ -17,8 +19,10 @@ export default function HomePagePropertyCard({
 }) {
   return (
 
-    <div
+    <Link
+      to={`/properties/${id}`}
       className="
+        block
         w-full
         min-h-[410px]
         overflow-hidden
@@ -88,13 +92,14 @@ export default function HomePagePropertyCard({
         </div>
 
       </div>
-    </div>
+    </Link>
   );
 }
 
 // HOW TO USE
 {/* 
   <HomePagePropertyCard
+    id={1}
     image={PropertyImage}
     title="3 Bedroom Flat"
     location="Lekki Phase 1, Lagos"

@@ -229,7 +229,7 @@ export default function MyListingCard({
       "
     >
       {/* IMAGE */}
-      <div className="relative w-full h-[220px] sm:h-[270px] overflow-hidden rounded-t-[4px]">
+      <div className="relative w-full h-[220px] sm:h-[240px] overflow-hidden rounded-t-[4px]">
         <img
           src={image}
           alt={title}
